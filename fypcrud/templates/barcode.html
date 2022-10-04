@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+                    {%block title%}
+                    Dashboard
+                    {%endblock title%} 
+
+                {%block body%}
+                <head>
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                </head>
+                <script>
+                    $(document).ready(function () {
+                        $("button").hide();
+                        $("input").keyup(function(){
+                            if(this.value.length==13){
+                                $("button").click();
+                            }
+                        });
+                     
+                    });
+                </script>
+                <br>
+                <br>
+                
+                <h2>Driver Entry/Exit Page </h2>
+                <div style="margin-top: 25px;">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                       
+                        <div class="mb-3">
+                            
+                            <input type="text" maxlength="13" class="form-control" value="" name="bid" autofocus>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                    </div>
+                    
+                    <h3>{{error_message}} </h3>
+                    <h3>{{message}} {{msg}} </h3>
+                    {%endblock body%}

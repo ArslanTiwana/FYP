@@ -1,0 +1,54 @@
+
+               
+                {% extends 'base.html' %}
+                {%load static%}
+               
+                {%block title%}
+                Details
+                {%endblock title%} 
+            {%block body%}
+          
+            <h1 style="margin-top: 75px;">History details</h1>
+            <h4>Name: {{guest.First_Name}} {{guest.Last_Name}}</h4>
+            <h4>CNIC: {{guest.CNIC}}</h4>
+            <h4>Address: House No:{{ guest.House_no }} Street:{{guest.Street}} Sector:{{guest.Sector}}</h4>
+            <br>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Sr #</th>
+                        <th scope="col">Entry Date Time</th>
+                        <th scope="col">Exit Date Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        
+                    {% for data in History %}
+                    
+                    {% if data.Guest_id == guest.Guest_id %}
+                            <th>{{ forloop.counter }}</th>
+                           
+                            <th scope="col">{{data.Entry_time}}</th>
+                            {% if data.Guest_id == guest.Guest_id %}
+                                {%if data.Exit_time == "None"%}
+                                <th scope="col" >---</th> 
+                                {%else%}
+                                <th scope="col" >{{ data.Exit_time }}</th> 
+                                {%endif%}
+                            {%endif%}
+                                </td>
+                            </tr>
+                        
+                        {%endif%}
+                        
+                        {% endfor %}
+                        
+                   
+                    </tbody>
+                </table>
+            </div>
+           
+                {%endblock body%}
+
+

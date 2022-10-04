@@ -1,0 +1,65 @@
+
+               
+                {% extends 'base.html' %}
+                {%load static%}
+               
+                {%block title%}
+                Details
+                {%endblock title%} 
+            {%block body%}
+          
+          
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown button
+                </button>
+                
+              </div>
+            <h1 style="margin-top: 75px;">Resident Approval Requests</h1>
+            <div class="container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sr #</th>
+                            <th scope="col">Plate number</th>
+                            <th scope="col">Car Name</th>
+                            <th scope="col">CNIC</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Phone No</th>
+                            <th scope="col"> Address</th>
+                            <th scope="col"> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in data %}
+                                <th scope="row">{{data.R_id}}</th>
+                                <td>{{ data.Car_Plate_number }}</td> 
+                                <td>{{data.Car_Name}}</td>
+                                <td>{{ data.CNIC }}</td>
+                                <td>{{ data.First_Name }}</td>
+                                <td>{{ data.Last_Name }}</td>
+                                <td>{{ data.Phone_Number }}</td>
+                                <td>House No:{{ data.House_no }} Street:{{data.Street}} Sector:{{data.Sector}}</td>
+                                <td>
+                                    <a href="{% url 'approve_tempresident' data.R_id %}">Approve</a>
+                                </td> 
+                            
+                                <td>
+                                    <a href="{% url 'delete_tempresident' data.R_id %}">Reject</a>
+                                   
+                                    </form> 
+                                </td>
+                            </tr>
+                        </thead>
+                        
+                        {% endfor %}
+
+                   
+                    </tbody>
+                </table>
+            </div>
+           
+                {%endblock body%}
+
+

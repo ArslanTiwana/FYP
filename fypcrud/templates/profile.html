@@ -1,0 +1,20 @@
+{%extends 'base.html' %}
+{%load crispy_forms_tags%}
+{%block title%}
+Profile Page {{id}}
+{%endblock title%} 
+{%block body%}
+
+<div class="container" >
+    <h1 style="margin-top: 75px;">Profile</h1>
+    <br/>
+    
+    <h3>User Name: {{user.username}}</h3>
+    <h3>Email: {{user.email}}</h3>
+    {% if request.user.is_staff %}
+    <h3>Role: Admin<h3>
+    {%else%}
+    <h3>Role: Gate Entry Operator<h3>
+    {% endif %}
+
+        {%endblock body%}

@@ -1,0 +1,15 @@
+{%extends 'base2.html' %}
+{%load crispy_forms_tags%}
+{%block title%}
+Logout Page {{id}}
+{%endblock title%} 
+{%block body%}
+
+<div class="container" >
+    <h3 style="margin-top: 75px;">You are Successfully Logedout! </h3>
+    To Login Again press
+    <a href="{% url 'Login' %}">Login</a>
+    <br/>
+    
+
+        {%endblock body%}

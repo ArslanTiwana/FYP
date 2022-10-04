@@ -1,0 +1,23 @@
+{%extends 'base2.html' %}
+{%load crispy_forms_tags%}
+{%block title%}
+Login Page {{id}}
+{%endblock title%} 
+{%block body%}
+
+<div class="container" >
+    <h1 style="margin-top: 75px;">Login</h1>
+    <br/>
+    <form action="" method="POST" style="background-color:rgb(255, 255, 204);padding:40px">
+        {% csrf_token %}
+        {{form|crispy}}
+        
+        <br>
+        
+        <div class="d-flex justify-content-center links">
+            Forgot password? <a href="{% url 'reset_password' %}" class="ml-2">Reset password</a>
+        </div>
+        <button  class="btn btn-primary">Login</button>
+    <form>
+
+        {%endblock body%}

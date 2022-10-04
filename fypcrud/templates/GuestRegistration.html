@@ -1,0 +1,92 @@
+
+                {% extends 'base.html' %}
+                {%block title%}
+                Guest Registration
+                {%endblock title%} 
+            {%block body%}
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown button
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="/ResidentRegistration">Resident</a></li>
+                    <li><a class="dropdown-item" href="/GuestRegistration" type="selected">Guest</a>
+                    </li>
+                </ul>
+                
+            </div>
+            <div class="container my-3">
+                <h1 style="margin-top: 75px;">Guest</h1>
+                <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
+                    <form action="" method="POST" >
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-6">
+                                
+                                        <label class="form-label">First Name:</label>
+                                        <input type="text" class="form-control" value="" name="First_Name" style="background-color:rgb(204, 255, 153)"> 
+                                    
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-6">
+                                
+                                        <label class="form-label">Last Name:</label>
+                            <input type="text" class="form-control" value="" name="Last_Name" style="background-color:rgb(204, 255, 153)">
+                                   
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-6">
+                                
+                                <label class="form-label">CNIC:</label>
+                                <input type="text" class="form-control" value=""  name="CNIC" style="background-color:rgb(204, 255, 153)">
+                                    
+                            </div>
+                        </div>
+                        
+    
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-6" >
+                                <label class="form-label">Car Name:</label>
+                                <input type="text" class="form-control" value="" name="Car_Name" style="background-color:rgb(204, 255, 153)">
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-6">
+                                <label class="form-label">License plate number:</label>
+                            <input type="text" class="form-control" value="" name="Car_Plate_number" style="background-color:rgb(204, 255, 153)">
+                            </div> 
+                        </div>   
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-3" style="width:33%" >
+                                
+                                        <label class="form-label">House Number:</label>
+                                        <input type="text" class="form-control" value="" name="H_no" style="background-color:rgb(204, 255, 153)">
+                                   
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+                                
+                                            <label class="form-label">Street:</label>
+                            <input type="text" class="form-control" value="" name="Street" style="background-color:rgb(204, 255, 153)">
+                                        
+                                   
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+                                
+                                            <label class="form-label">Sector/Block:</label>
+                                            <input type="text" class="form-control" style="background-color:rgb(204, 255, 153)" value="" name="Sector">
+                                            
+                                </div>
+                            </div>
+                        </div>
+                       
+                       
+                        <br>
+                        <button type="submit" name="Save" class="btn btn-primary">Submit</button>
+                        
+                        <button type="submit" name="Issuecard" class="btn btn-primary">Issue Card</button>
+                    
+                        
+                    </form>
+                </div>
+            </div>
+            
+                {%endblock body%}

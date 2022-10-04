@@ -1,0 +1,59 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<script>
+    $(document).ready(function () {
+      
+      window.print()
+    //     $("button").click(function (){
+  
+    //   $("#a").hide();
+    //     window.print()
+    // });
+           
+           
+            
+        
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/IDCard.css">
+    <title>ID Card</title>
+   
+</head>
+<body>
+    <div class="container">
+        <div class="padding">
+        <div class="font" style=" background-image:url('/static/PICTURES/ecardbgfinal.png');">
+            <div class="companyname">Tiwana<br><span class="tab">Housing Society</span></div>
+            <div class="">
+                <div class="ename">
+                <p class="p1"><b>{{re.First_Name}} {{re.Last_Name}}</b></p>
+                <p>{{re.type}}</p>
+                </div>
+                <div class="edetails">
+                    <P><b>CNIC: </b>{{re.CNIC}} </P>
+                    <p><b>Car Name </b> {{car_name}}</p>
+                    <p><b>Car Plate Number</b> {{re.Car_Plate_number}}</p>
+                    <p><b>Address: </b>House#{{re.House_no}}, Street#{{re.Street}},Sector#{{re.Sector}}</p>
+                    
+                <p></p>
+                <div class="barcode">
+                    <img src="/{{card.barcode}}" alt="">
+                </div>
+                </div>
+               
+
+          
+            </div>
+        </div>
+    </div>
+       
+    </div>
+</body>
+</html>
