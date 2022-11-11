@@ -22,6 +22,12 @@ from django.contrib.auth.models import Group
 from fyp.models import temproryresidentdata
 from fyp.models import history
 import datetime
+from PIL import Image
+import cv2 
+import requests
+from pprint import pprint
+
+
 
 
 #Function for Welcome PAge
@@ -112,7 +118,8 @@ def Residentupdate(request,id):
         L_name=request.POST.get('Last_Name')
         cnic=request.POST.get('CNIC')
         Car_name=request.POST.get('Car_Name')
-        Car_Plate_Number=request.POST.get('Car_Plate_number')
+        cdn=request.POST.get('Car_Plate_number')
+        Car_Plate_Number=cdn.upper()
         H_no=request.POST.get('H_no')
         Street=request.POST.get('Street')
         Sector=request.POST.get('Sector')
@@ -166,7 +173,8 @@ def Guestupdate(request,id):
         L_name=request.POST.get('Last_Name')
         cnic=request.POST.get('CNIC')
         Car_name=request.POST.get('Car_Name')
-        Car_Plate_Number=request.POST.get('Car_Plate_number')
+        cdn=request.POST.get('Car_Plate_number')
+        Car_Plate_Number=cdn.upper()
         H_no=request.POST.get('H_no')
         Street=request.POST.get('Street')
         Sector=request.POST.get('Sector')
@@ -215,34 +223,75 @@ def barcode(request):
             context={
             "error_message":"Card is not authenticated"
             }
-            return render(request,'barcode.html',context)
-        if cad.type=='guest':
-            guest=Guests.objects.get(Card_id=cad.Card_id)
-            History=history.objects.all()
-            try:
-                if guest.isentered==False:
-                    
-                    history.objects.create(Guest_id=guest.Guest_id,Entry_time=datetime.datetime.now())
-                    guest.isentered=True
-                    guest.save()
-                else:
-                    for hist in History:
-                        if hist.Guest_id==guest.Guest_id:
-                            if hist.Exit_time==None:
-                                hist.Exit_time=datetime.datetime.now()
-                                hist.Guest_id=guest.Guest_id
-                                hist.save()
-                    guest.isentered=False
-                    guest.save()
-            except:
-                return render(request,'barcode.html',context)
-        context={
+     
+        val = str(cad.Car_Plate_number)
+        print("Local Registered plate number   "+val)
+
+        try:
+            camera=cv2.VideoCapture(0)
+
+            while True:
+                _,Image=camera.read()
+                cv2.imshow("text recognition",Image)
+                if cv2.waitKey(1)& 0xFF==ord('s'):
+                    cv2.imwrite('test.jpg',Image)
+                    break
+            camera.release()
+            cv2.destroyAllWindows()
+
+            
+            regions = ['mx', 'us-ca'] # Change to your country
+            with open('test.jpg', 'rb') as fp:
+                response = requests.post(
+                    'https://api.platerecognizer.com/v1/plate-reader/',
+                    data=dict(regions=regions),  # Optional
+                    files=dict(upload=fp),
+                    headers={'Authorization': 'Token 6f7ccd3628dcd2d791778bd42d1f3d840f6f0abb'})
+                    #additional token number 'Token 0f1bca95c7fa16cf31122f52ab579db44b41273e'
+            result=response.json()['results']
+            res=result[0]
+            res1=res['plate'].upper()
+            res2=str(res1)
+            print("extracted plate number   "+res2)
+            if res2==val:
+                print("matched")
+                print("Card and Car number plate matched")
+                matchedmsg="Card and Car number plate matched"
+                if cad.type=='guest':
+                    guest=Guests.objects.get(Card_id=cad.Card_id)
+                    History=history.objects.all()
+                    try:
+                        if guest.isentered==False:
+                            
+                            history.objects.create(Guest_id=guest.Guest_id,Entry_time=datetime.datetime.now())
+                            guest.isentered=True
+                            guest.save()
+                        else:
+                            for hist in History:
+                                if hist.Guest_id==guest.Guest_id:
+                                    if hist.Exit_time==None:
+                                        hist.Exit_time=datetime.datetime.now()
+                                        hist.Guest_id=guest.Guest_id
+                                        hist.save()
+                            guest.isentered=False
+                            guest.save()
+                    except:
+                        return render(request,'barcode.html',context)
+            else:
+                print("notmatched")
+                print("Car's Number Plate Not Authenticated")
+                matchedmsg="Car's Number Plate Not Authenticated"
+            context={
                         "msg":cad.Car_Plate_number,
-                        "message":"Card is Registered Against Car Plate Number"
+                        "message":"Card is Registered Against Car Plate Number",
+                        "matched":matchedmsg
                         
                     }
+            
+            return render(request,'barcode.html',context)
+        except:
+            matchedmsg=""
         
-        return render(request,'barcode.html',context)
     return render(request,'barcode.html')
     
 @login_required(login_url="Login")
@@ -272,7 +321,7 @@ def ResidentRegistration(request):
             sector=request.POST.get('Sector')
             Phone_number=request.POST.get('Phone_Number')
             temproryresidentdata.objects.create(First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                    Phone_Number=Phone_number,Car_Name=Car_name,Car_Plate_number=Car_Plate_Number,
+                    Phone_Number=Phone_number,Car_Name=Car_name,Car_Plate_number=Car_Plate_Number.upper(),
                     House_no=H_no,Street=street,Sector=sector)
         elif request.method=='POST':
             
@@ -280,7 +329,8 @@ def ResidentRegistration(request):
             L_name=request.POST.get('Last_Name')
             cnic=request.POST.get('CNIC')
             Car_name=request.POST.get('Car_Name')
-            Car_Plate_Number=request.POST.get('Car_Plate_number')
+            cpn=request.POST.get('Car_Plate_number')
+            Car_Plate_Number=cpn.upper()
             H_no=request.POST.get('H_no')
             street=request.POST.get('Street')
             sector=request.POST.get('Sector')
@@ -302,11 +352,17 @@ def ResidentRegistration(request):
                         'type':'Resident',
                             're':re,
                             'car_name':car.Name,
-                            'card':card
+                            'card':card,
+                            
                     }
                 return render(request,'IssueCard.html',context)
     except:
-            return render(request,'ResidentRegistration.html')
+            context={
+                        'msg':"Data Not Added"
+                            
+                    }
+            return render(request,'ResidentRegistration.html',context)
+
     return render(request,'ResidentRegistration.html')
 
 @login_required(login_url='Login')
@@ -365,7 +421,8 @@ def GuestRegistration(request):
             L_name=request.POST.get('Last_Name')
             cnic=request.POST.get('CNIC')
             Car_name=request.POST.get('Car_Name')
-            Car_Plate_Number=request.POST.get('Car_Plate_number')
+            cpn=request.POST.get('Car_Plate_number')
+            Car_Plate_Number=cpn.upper()
             H_no=request.POST.get('H_no')
             street=request.POST.get('Street')
             sector=request.POST.get('Sector')
@@ -390,7 +447,11 @@ def GuestRegistration(request):
                 }
                 return render(request,'IssueCard.html',context)
     except:
-            return render(request,'GuestRegistration.html')
+            context={
+                        'msg':"Data Not Added"
+                            
+                    }
+            return render(request,'GuestRegistration.html',context)
 
     return render(request,'GuestRegistration.html')
 

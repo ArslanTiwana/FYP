@@ -4,6 +4,16 @@
                 Guest Registration
                 {%endblock title%} 
             {%block body%}
+            <head>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            </head>
+            {% if msg == "Data Not Added" %}
+
+            <script>
+
+                alert("Data Not Added");
+            </script>
+            {%endif%}
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
