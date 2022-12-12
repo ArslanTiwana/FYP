@@ -15,8 +15,6 @@ class Person(models.Model):
     class Meta:
         abstract=True
 
-
-
 class Car(models.Model):
     Car_Plate_number=models.CharField(max_length=7,primary_key=True)
     Name=models.CharField(max_length=30,null=True)

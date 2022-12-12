@@ -310,60 +310,73 @@ def historys(request,id):
 #Function to get details of resident from form and save into Resident table 
 @login_required(login_url="Login")
 def ResidentRegistration(request):
-    try:
-        if 'submitforapproval' in request.POST:
-            F_name=request.POST.get('First_Name')
-            L_name=request.POST.get('Last_Name')
-            cnic=request.POST.get('CNIC')
-            Car_name=request.POST.get('Car_Name')
-            Car_Plate_Number=request.POST.get('Car_Plate_number')
-            H_no=request.POST.get('H_no')
-            street=request.POST.get('Street')
-            sector=request.POST.get('Sector')
-            Phone_number=request.POST.get('Phone_Number')
-            temproryresidentdata.objects.create(First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+    if 'submitforapproval' in request.POST:
+        F_name=request.POST.get('First_Name')
+        L_name=request.POST.get('Last_Name')
+        cnic=request.POST.get('CNIC')
+        Car_name=request.POST.get('Car_Name')
+        Car_Plate_Number=request.POST.get('Car_Plate_number')
+        H_no=request.POST.get('H_no')
+        street=request.POST.get('Street')
+        sector=request.POST.get('Sector')
+        Phone_number=request.POST.get('Phone_Number')
+        temproryresidentdata.objects.create(First_Name=F_name,Last_Name=L_name,CNIC=cnic,
                     Phone_Number=Phone_number,Car_Name=Car_name,Car_Plate_number=Car_Plate_Number.upper(),
                     House_no=H_no,Street=street,Sector=sector)
-        elif request.method=='POST':
+    elif request.method=='POST':
+        CarNames=[]
+        CarNumbers=[]  
+        F_name=request.POST.get('First_Name')
+        L_name=request.POST.get('Last_Name')
+        cnic=request.POST.get('CNIC')
+        Car_name=request.POST.get('Car_Name0')
+        cpn=request.POST.get('Car_Plate_number0')
+        for x in range(0,100):
+            Tag1='Car_Name'+str(x)
+            Cn=request.POST.get(Tag1)
+            if Cn is not None:
+                CarNames.append(Cn)
+            Tag2='Car_Plate_number'+str(x)
+            cpno=request.POST.get(Tag2)
+            if cpno is not None:
+                CarNumbers.append(cpno)
+        print(CarNames)
+        print(CarNumbers)
+        Car_Plate_Number=cpn.upper()
+        H_no=request.POST.get('H_no')
+        street=request.POST.get('Street')
+        sector=request.POST.get('Sector')
+        Phone_number=request.POST.get('Phone_Number')
+        bcode=randint(100000000000,999999999999)
+        Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of resident in car table
+        car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
+        Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="resident") #save Card details of resident in card table
+        card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
             
-            F_name=request.POST.get('First_Name')
-            L_name=request.POST.get('Last_Name')
-            cnic=request.POST.get('CNIC')
-            Car_name=request.POST.get('Car_Name')
-            cpn=request.POST.get('Car_Plate_number')
-            Car_Plate_Number=cpn.upper()
-            H_no=request.POST.get('H_no')
-            street=request.POST.get('Street')
-            sector=request.POST.get('Sector')
-            Phone_number=request.POST.get('Phone_Number')
-            bcode=randint(100000000000,999999999999)
-            Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of resident in car table
-            car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
-            Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="resident") #save Card details of resident in card table
-            card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
-            
-            Residents.objects.create(
+        Residents.objects.create(
                 First_Name=F_name,Last_Name=L_name,CNIC=cnic,
                 Phone_Number=Phone_number,Card_id=card,Car_Plate_number=car,
                 House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
 
-            if 'Issuecard' in request.POST:
-                re=Residents.objects.get(CNIC=cnic)
-                context={
+        if 'Issuecard' in request.POST:
+            re=Residents.objects.get(CNIC=cnic)
+            context={
                         'type':'Resident',
                             're':re,
                             'car_name':car.Name,
                             'card':card,
                             
                     }
-                return render(request,'IssueCard.html',context)
-    except:
-            context={
-                        'msg':"Data Not Added"
+            return render(request,'IssueCard.html',context)
+    # try:
+        
+        
+    # except:
+    #         context={
+    #                     'msg':"Data Not Added"
                             
-                    }
-            return render(request,'ResidentRegistration.html',context)
-
+    #                 }
+    #         return render(request,'ResidentRegistration.html',context)
     return render(request,'ResidentRegistration.html')
 
 @login_required(login_url='Login')
@@ -500,5 +513,12 @@ def approve_tempresident(request,id):
             House_no=pi.House_no,Street=pi.Street,Sector=pi.Sector) #save details Resident in table
     pi.delete()
     return redirect('approvalpage')
+@login_required(login_url="Login")
+def AddCars(request):
+    return redirect('ResidentRegistration')
+
+
+
+
 
 

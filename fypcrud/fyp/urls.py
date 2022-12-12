@@ -17,6 +17,7 @@ urlpatterns = [
 
     path("GuestRegistration", views.GuestRegistration, name='GuestRegistration'),
     path("ResidentRegistration", views.ResidentRegistration, name='ResidentRegistration'),
+    path("AddCars",views.AddCars,name="AddCars"),
 
 
     path("ViewDetailsResident", views.ViewDetailsResident, name='ViewDetailsResident'),

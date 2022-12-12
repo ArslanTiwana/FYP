@@ -1,126 +1,169 @@
+{% extends 'base.html' %}
+{%block title%}
+Resident registration
+{%endblock title%}
+{%block body%}
 
-                {% extends 'base.html' %}
-                {%block title%}
-                Resident registration
-                {%endblock title%} 
-            {%block body%}
-          
-            <head>
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-            </head>
-            {% if msg == "Data Not Added" %}
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+{% if msg == "Data Not Added" %}
 
-            <script>
+<script>
 
-                alert("Data Not Added");
-            </script>
-            {%endif%}
-            <style>
-                .required:after {
-                  content:" *";
-                  color: red;
-                }
-              </style>
-            <div class="container my-3">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown button
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="/ResidentRegistration">Resident</a></li>
-                        <li><a class="dropdown-item" href="/GuestRegistration" type="selected">Guest</a>
-                        </li>
-                    </ul>
+    alert("Data Not Added");
+
+</script>
+{%endif%}
+<style>
+    .required:after {
+        content: " *";
+        color: red;
+    }
+</style>
+<div class="container my-3">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown button
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="/ResidentRegistration">Resident</a></li>
+            <li><a class="dropdown-item" href="/GuestRegistration" type="selected">Guest</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <h1 style="margin-top: 75px;">Residents</h1>
+    <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
+        <form action="" method="POST" id="app-form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-6">
+                    <label class="form-label required">First Name:</label>
+                    <input type="text" class="form-control" placeholder="First Name" value="" name="First_Name"
+                        style="background-color:rgb(204, 255, 153)" required>
                 </div>
+                <div class="col-xs-12 col-sm-6 col-6">
 
-                
-                <h1 style="margin-top: 75px;">Residents</h1>
-                <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
-                <form action="" method="POST" >
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-6">
-                            
-
-
-                                    <label class="form-label required">First Name:</label>
-                                    <input type="text" class="form-control" placeholder="First Name" value="" name="First_Name" style="background-color:rgb(204, 255, 153)" required> 
-                                
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-6">
-                            
-                                    <label class="form-label">Last Name:</label>
-                        <input type="text" class="form-control" value="" placeholder="Last Name" name="Last_Name" style="background-color:rgb(204, 255, 153)">
-                               
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-6">
-                            
-                            <label class="form-label required">CNIC:</label>
-                            <input type="text" class="form-control" value="" placeholder="3110111111111" name="CNIC" maxlength="13" style="background-color:rgb(204, 255, 153) " required>
-                                
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-6">
-                            
-                            <label class="form-label required">Phone #</label>
-                            <input type="text" class="form-control" value="" name="Phone_Number" placeholder="03XXXXXXXX" maxlength="11" style="background-color:rgb(204, 255, 153) " required>
-                               
-                        </div>
-                    </div>
-                    
-
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-6" >
-                            <label class="form-label required">Car Name:</label>
-                            <input type="text" class="form-control" value="" placeholder="Honda/Toyota" name="Car_Name" style="background-color:rgb(204, 255, 153) " required>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-6">
-                            <label class="form-label required">License plate number:</label>
-                        <input type="text" class="form-control" value="" name="Car_Plate_number" placeholder="XXX123" style="background-color:rgb(204, 255, 153)" required>
-                        </div> 
-                    </div>   
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-3" style="width:33%" >
-                            
-                                    <label class="form-label">House Number:</label>
-                                    <input type="number" class="form-control" value="" placeholder="123" name="H_no" style="background-color:rgb(204, 255, 153)">
-                               
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                            
-                                        <label class="form-label">Street:</label>
-                        <input type="number" class="form-control" value="" name="Street" placeholder="0" style="background-color:rgb(204, 255, 153)">
-                                    
-                               
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                            
-                                        <label class="form-label">Sector/Block:</label>
-                                        <input type="number" class="form-control" placeholder="0" style="background-color:rgb(204, 255, 153)" value="" name="Sector">
-                                        
-                            </div>
-                        </div>
-                    </div>
-                   
-                   
-                    <br>
-                    {% if request.user.is_staff %}
-                    <button type="submit" name="Save" class="btn btn-primary">Submit</button>
-                    <button type="submit" name="Issuecard" class="btn btn-primary">Issue Card</button>
-                    {%else%}
-                    
-                        <button type="submit" name="submitforapproval" class="btn btn-primary">Submit for Approval</button>
-                    
-                    {%endif%}
-                    
-                
-                    
-                </form>
+                    <label class="form-label">Last Name:</label>
+                    <input type="text" class="form-control" value="" placeholder="Last Name" name="Last_Name"
+                        style="background-color:rgb(204, 255, 153)">
+                </div>
             </div>
-        </div>
-                {%endblock body%}
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-6">
+                    <label class="form-label required">CNIC:</label>
+                    <input type="text" class="form-control" value="" placeholder="3110111111111" name="CNIC"
+                        maxlength="13" style="background-color:rgb(204, 255, 153) " required>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-6">
+                    <label class="form-label required">Phone #</label>
+                    <input type="text" class="form-control" value="" name="Phone_Number" placeholder="03XXXXXXXX"
+                        maxlength="11" style="background-color:rgb(204, 255, 153) " required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-3" style="width:33%">
+
+                    <label class="form-label">House Number:</label>
+                    <input type="number" class="form-control" value="" placeholder="123" name="H_no"
+                        style="background-color:rgb(204, 255, 153)">
+
+                </div>
+                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+
+                    <label class="form-label">Street:</label>
+                    <input type="number" class="form-control" value="" name="Street" placeholder="0"
+                        style="background-color:rgb(204, 255, 153)">
+
+
+                </div>
+                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+
+                    <label class="form-label">Sector/Block:</label>
+                    <input type="number" class="form-control" placeholder="0"
+                        style="background-color:rgb(204, 255, 153)" value="" name="Sector">
+
+                </div>
+            </div>
+            <div class="row "id="duplicate-row">
+                
+                    <div class="col-xs-12 col-sm-4 col-4">
+                        <label class="form-label required">Car Name:</label>
+                        <input type="text" class="form-control" value=""  placeholder="Honda/Toyota" name="Car_Name0"
+                            style="background-color:rgb(204, 255, 153) " required>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-4">
+                        <label class="form-label required">License plate number:</label>
+                        <input type="text" class="form-control" value="" name="Car_Plate_number0" placeholder="XXX123"
+                            style="background-color:rgb(204, 255, 153)" required>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-2">
+                        <label class="form-label"></label>
+                        <button class="btn btn-primary form-control" onclick='addMoreCars()'>Add More Cars</button>
+                    </div>
+                </div>
+    </div>
+
+
+    <br>
+    {% if request.user.is_staff %}
+    <button type="submit" name="Save" class="btn btn-primary">Submit</button>
+    <button type="submit" name="Issuecard" class="btn btn-primary">Issue Card</button>
+    {%else%}
+
+    <button type="submit" name="submitforapproval" class="btn btn-primary">Submit for Approval</button>
+
+    {%endif%}
 
 
 
+    </form>
+</div>
+</div>
+<script>
+     var counter = 0;
+    const container = document.getElementById('input-cont');
+    $( document ).ready(function() {
+    console.log( counter );
+});
+   
+    // Call addInput() function on button click
+    function addMoreCars() {
+        counter = counter + 1;
+        $('#duplicate-row').append(`<div class="row"><div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">Car Name:</label>
+                    <input type="text" class="form-control"  value="" placeholder="Honda/Toyota" name="Car_Name`+counter+`"  style="background-color:rgb(204, 255, 153) " required>
+                </div>
+                <div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">License plate number:</label>
+                    <input type="text" class="form-control" value="" name="Car_Plate_number`+counter+`" placeholder="XXX123" style="background-color:rgb(204, 255, 153)" required>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-2">
+                        <label class="form-label"></label>
+                        <button class="btn btn-danger form-control remove" onclick="RemoveCars()">Remove Car</button>
+                    </div></div>`)
+                    console.log( counter );
+   
+    }
+    $("#Car_Name1").keyup(function(){
+        var tvalue = $( this ).val();
+    console.log(tvalue);
+    })
+    function RemoveCars(){
+        $('#duplicate-row').children().last().remove();
+        counter=counter-1;
+        console.log( counter );
+
+    }
+    $('#app-form').on('submit', function(){
+    var arr = $(this).serializeArray();
+    console.log(arr);
+    // return false; //      /<-- Only, if you don't want the form to be submitted after above commands
+});
+   
+</script>
+{%endblock body%}
