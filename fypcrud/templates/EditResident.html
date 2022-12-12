@@ -32,13 +32,13 @@ Resident Update {{id}}
                 <div class="col-xs-12 col-sm-6 col-6">
                     
                     <label class="form-label">CNIC:</label>
-                    <input type="text" class="form-control" value={{data.CNIC}}  name="CNIC" style="background-color:rgb(204, 255, 153)">
+                    <input type="text" class="form-control" value={{data.CNIC}} maxlength="13"  name="CNIC" style="background-color:rgb(204, 255, 153)">
                         
                 </div>
                 <div class="col-xs-12 col-sm-6 col-6">
                     
                     <label class="form-label">Phone #</label>
-                    <input type="text" class="form-control" value={{data.Phone_Number}} name="Phone_Number" style="background-color:rgb(204, 255, 153)">
+                    <input type="text" class="form-control" value={{data.Phone_Number}} maxlength="11" name="Phone_Number" style="background-color:rgb(204, 255, 153)">
                        
                 </div>
             </div>
@@ -58,20 +58,20 @@ Resident Update {{id}}
                 <div class="col-xs-12 col-sm-6 col-3" style="width:33%" >
                     
                             <label class="form-label">House Number:</label>
-                            <input type="text" class="form-control" value={{data.House_no}} name="H_no" style="background-color:rgb(204, 255, 153)">
+                            <input type="number" class="form-control" value={{data.House_no}} name="H_no" style="background-color:rgb(204, 255, 153)">
                        
                 </div>
                 <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
                     
                                 <label class="form-label">Street:</label>
-                <input type="text" class="form-control" value={{data.Street}} name="Street" style="background-color:rgb(204, 255, 153)">
+                <input type="number" class="form-control" value={{data.Street}} name="Street" style="background-color:rgb(204, 255, 153)">
                             
                        
                 </div>
                 <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
                     
                                 <label class="form-label">Sector/Block:</label>
-                                <input type="text" class="form-control" style="background-color:rgb(204, 255, 153)" value={{data.Sector}} name="Sector">
+                                <input type="number" class="form-control" style="background-color:rgb(204, 255, 153)" value={{data.Sector}} name="Sector">
                                 
                     </div>
                 </div>

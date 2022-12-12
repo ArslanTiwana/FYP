@@ -15,7 +15,7 @@
               </div>
             <h1 style="margin-top: 75px;">Guest</h1>
             <div class="container">
-                <table class="table">
+                <table class="table" id="table_id" >
                     <thead>
                         <tr>
                             <th scope="col">Sr #</th>
@@ -28,11 +28,14 @@
                             <th scope="col"> IssueCard</th>
                             <th scope="col"> History</th>
                             <th scope="col" > Actions</th>
+                            <th scope="col" > Actions</th>
+
                         </tr>
                     </thead>
                     <tbody>
+                        <tr>
                         {% for data in Guests %}
-                        <th>{{ forloop.counter }}</th>
+                        <td>{{ forloop.counter }}</td>
                             <td>{{ data.Car_Plate_number }}</td> 
                             {% with w=data.Car_Plate_number %}     
                             {% for ca in car %}

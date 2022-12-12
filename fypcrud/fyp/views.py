@@ -223,6 +223,7 @@ def barcode(request):
             context={
             "error_message":"Card is not authenticated"
             }
+            return(render(request,'barcode.html',context))
      
         val = str(cad.Car_Plate_number)
         print("Local Registered plate number   "+val)
