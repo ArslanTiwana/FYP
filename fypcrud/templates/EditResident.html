@@ -1,93 +1,163 @@
 {% extends 'base.html' %}
 {%block title%}
 Resident Update {{id}}
-{%endblock title%} 
+{%endblock title%}
 {%block body%}
-<form action="{% url 'Residentupdate' data.Resident_id %}" method="POST">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<form action="{% url 'Residentupdate' data.Resident_id %}" method="POST" id="app-form">
     {% csrf_token %}
-   <br>
-   <br>
-   <br>
-   <br>
-   <br>
-   <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
-        <form action="" method="POST" >
+        <form action="" method="POST">
             {% csrf_token %}
             <div class="row">
                 <div class="col-xs-12 col-sm-6 col-6">
-                    
-                            <label class="form-label">First Name:</label>
-                            <input type="text" class="form-control" value={{data.First_Name}} name="First_Name" style="background-color:rgb(204, 255, 153)"> 
-                        
+
+                    <label class="form-label">First Name:</label>
+                    <input type="text" class="form-control" value={{data.First_Name}} name="First_Name"
+                        style="background-color:rgb(204, 255, 153)">
+
                 </div>
                 <div class="col-xs-12 col-sm-6 col-6">
-                    
-                            <label class="form-label">Last Name:</label>
-                <input type="text" class="form-control" value={{data.Last_Name}} name="Last_Name" style="background-color:rgb(204, 255, 153)">
-                       
+
+                    <label class="form-label">Last Name:</label>
+                    <input type="text" class="form-control" value={{data.Last_Name}} name="Last_Name"
+                        style="background-color:rgb(204, 255, 153)">
+
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-6 col-6">
-                    
+
                     <label class="form-label">CNIC:</label>
-                    <input type="text" class="form-control" value={{data.CNIC}} maxlength="13"  name="CNIC" style="background-color:rgb(204, 255, 153)">
-                        
+                    <input type="text" class="form-control" value={{data.CNIC}} maxlength="13" name="CNIC"
+                        style="background-color:rgb(204, 255, 153)">
+
                 </div>
                 <div class="col-xs-12 col-sm-6 col-6">
-                    
+
                     <label class="form-label">Phone #</label>
-                    <input type="text" class="form-control" value={{data.Phone_Number}} maxlength="11" name="Phone_Number" style="background-color:rgb(204, 255, 153)">
-                       
+                    <input type="text" class="form-control" value={{data.Phone_Number}} maxlength="11"
+                        name="Phone_Number" style="background-color:rgb(204, 255, 153)">
+
                 </div>
             </div>
-            
+
+
 
             <div class="row">
-                <div class="col-xs-12 col-sm-6 col-6" >
-                    <label class="form-label">Car Name:</label>
-                    <input type="text" class="form-control" value={{car.Name}} name="Car_Name" style="background-color:rgb(204, 255, 153)">
+                <div class=" col-sm-3 col-3" style="width:25%">
+
+                    <label class="form-label">House Number:</label>
+                    <input type="number" class="form-control" value={{data.House_no}} name="H_no"
+                        style="background-color:rgb(204, 255, 153)">
+
                 </div>
-                <div class="col-xs-12 col-sm-6 col-6">
-                    <label class="form-label">License plate number:</label>
-                <input type="text" class="form-control" value={{data.Car_Plate_number}} name="Car_Plate_number" style="background-color:rgb(204, 255, 153)">
-                </div> 
-            </div>   
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-3" style="width:33%" >
-                    
-                            <label class="form-label">House Number:</label>
-                            <input type="number" class="form-control" value={{data.House_no}} name="H_no" style="background-color:rgb(204, 255, 153)">
-                       
+                <div class="col-xs-12 col-sm-3 col-3" style="width:25%">
+
+                    <label class="form-label">Street:</label>
+                    <input type="number" class="form-control" value={{data.Street}} name="Street"
+                        style="background-color:rgb(204, 255, 153)">
+
+
                 </div>
-                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                    
-                                <label class="form-label">Street:</label>
-                <input type="number" class="form-control" value={{data.Street}} name="Street" style="background-color:rgb(204, 255, 153)">
-                            
-                       
+                <div class="col-xs-12 col-sm-3 col-3" style="width:25%">
+
+                    <label class="form-label">Sector/Block:</label>
+                    <input type="number" class="form-control" style="background-color:rgb(204, 255, 153)"
+                        value={{data.Sector}} name="Sector">
+
                 </div>
-                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                    
-                                <label class="form-label">Sector/Block:</label>
-                                <input type="number" class="form-control" style="background-color:rgb(204, 255, 153)" value={{data.Sector}} name="Sector">
-                                
-                    </div>
+                <div class="col-xs-12 col-sm-2 col-2">
+                    <label class="form-label"></label>
+                    <button class="btn btn-primary form-control" onclick='addMoreCars()'>Add More Cars</button>
                 </div>
             </div>
-           
-           
-            <br>
-            <span>
-                <form action="{% url 'Residentupdate' data.Resident_id %}" method="POST">
-                    {% csrf_token %}
-                    <input type="submit" class="btn btn-primary" value="Edit">
-                </form>
-            </span>
+            {%for crd in card%}
+            {%if crd.Resident.CNIC == data.CNIC%}
+                <div class="row " id="duplicate-row">
+
+                    <div class="col-xs-12 col-sm-3 col-4">
+                        <label class="form-label required">Car Name:</label>
+                        <input type="text" class="form-control" value="{{crd.Car_Plate_number.Name}}"
+                            name="Car_Name{{forloop.counter}}" style="background-color:rgb(204, 255, 153) " required>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-4">
+                        <label class="form-label required">License plate number:</label>
+                        <input type="text" class="form-control" value="{{crd.Car_Plate_number.Car_Plate_number}}"
+                            name="Car_Plate_number{{ forloop.counter}}" style="background-color:rgb(204, 255, 153)"
+                            required>
+                    </div>
+                    
+                    <div class="col-xs-12 col-sm-2 col-2">
+                        <label class="form-label"></label>
+                        
+                            <a class="btn btn-danger form-control" href="{% url 'removecar' crd.Card_id data.Resident_id %}">Remove Car</a>
+                    </div>
+                    
             
-        </form>
+
     </div>
-    
+    {% endif %}
+    {%endfor%}
+    </div>
+    <br>
+    <span>
+        <form action="{% url 'Residentupdate' data.Resident_id %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-primary" value="Update">
+        </form>
+    </span>
+
+</form>
+</div>
+<script>
+
+    var counter = 10;
+    const container = document.getElementById('input-cont');
+    $(document).ready(function () {
+        console.log(counter);
+    });
+
+    // Call addInput() function on button click
+    function addMoreCars() {
+        counter = counter + 1;
+        $('#duplicate-row').append(`<div class="row"><div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">Car Name:</label>
+                    <input type="text" class="form-control"  value="" placeholder="Honda/Toyota" name="Car_Name`+ counter + `"  style="background-color:rgb(204, 255, 153) " required>
+                </div>
+                <div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">License plate number:</label>
+                    <input type="text" class="form-control" value="" name="Car_Plate_number`+ counter + `" placeholder="XXX123" style="background-color:rgb(204, 255, 153)" required>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-2">
+                        <label class="form-label"></label>
+                        <button class="btn btn-danger form-control remove" onclick="RemoveCars()">Remove Car</button>
+                    </div></div>`)
+        console.log(counter);
+
+    }
+    $("#Car_Name1").keyup(function () {
+        var tvalue = $(this).val();
+        console.log(tvalue);
+    })
+    function RemoveCars() {
+        $('#duplicate-row').children().last().remove();
+        counter = counter - 1;
+        console.log(counter);
+
+    }
+    $('#app-form').on('submit', function () {
+        var arr = $(this).serializeArray();
+        console.log(arr);
+        // return false; //      /<-- Only, if you don't want the form to be submitted after above commands
+    });
+
+</script>
 
 {%endblock body%}

@@ -89,30 +89,29 @@ Resident registration
 
                 </div>
             </div>
-            <div class="row "id="duplicate-row">
-                
-                    <div class="col-xs-12 col-sm-4 col-4">
-                        <label class="form-label required">Car Name:</label>
-                        <input type="text" class="form-control" value=""  placeholder="Honda/Toyota" name="Car_Name0"
-                            style="background-color:rgb(204, 255, 153) " required>
-                    </div>
-                    <div class="col-xs-12 col-sm-4 col-4">
-                        <label class="form-label required">License plate number:</label>
-                        <input type="text" class="form-control" value="" name="Car_Plate_number0" placeholder="XXX123"
-                            style="background-color:rgb(204, 255, 153)" required>
-                    </div>
-                    <div class="col-xs-12 col-sm-2 col-2">
-                        <label class="form-label"></label>
-                        <button class="btn btn-primary form-control" onclick='addMoreCars()'>Add More Cars</button>
-                    </div>
+            <div class="row " id="duplicate-row">
+
+                <div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">Car Name:</label>
+                    <input type="text" class="form-control" value="" placeholder="Honda/Toyota" name="Car_Name0"
+                        style="background-color:rgb(204, 255, 153) " required>
                 </div>
+                <div class="col-xs-12 col-sm-4 col-4">
+                    <label class="form-label required">License plate number:</label>
+                    <input type="text" class="form-control" value="" name="Car_Plate_number0" placeholder="XXX123"
+                        style="background-color:rgb(204, 255, 153)" required>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-2">
+                    <label class="form-label"></label>
+                    <button class="btn btn-primary form-control" onclick='addMoreCars()'>Add More Cars</button>
+                </div>
+            </div>
     </div>
 
 
     <br>
     {% if request.user.is_staff %}
     <button type="submit" name="Save" class="btn btn-primary">Submit</button>
-    <button type="submit" name="Issuecard" class="btn btn-primary">Issue Card</button>
     {%else%}
 
     <button type="submit" name="submitforapproval" class="btn btn-primary">Submit for Approval</button>
@@ -125,45 +124,45 @@ Resident registration
 </div>
 </div>
 <script>
-     var counter = 0;
+    var counter = 0;
     const container = document.getElementById('input-cont');
-    $( document ).ready(function() {
-    console.log( counter );
-});
-   
+    $(document).ready(function () {
+        console.log(counter);
+    });
+
     // Call addInput() function on button click
     function addMoreCars() {
         counter = counter + 1;
         $('#duplicate-row').append(`<div class="row"><div class="col-xs-12 col-sm-4 col-4">
                     <label class="form-label required">Car Name:</label>
-                    <input type="text" class="form-control"  value="" placeholder="Honda/Toyota" name="Car_Name`+counter+`"  style="background-color:rgb(204, 255, 153) " required>
+                    <input type="text" class="form-control"  value="" placeholder="Honda/Toyota" name="Car_Name`+ counter + `"  style="background-color:rgb(204, 255, 153) " required>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-4">
                     <label class="form-label required">License plate number:</label>
-                    <input type="text" class="form-control" value="" name="Car_Plate_number`+counter+`" placeholder="XXX123" style="background-color:rgb(204, 255, 153)" required>
+                    <input type="text" class="form-control" value="" name="Car_Plate_number`+ counter + `" placeholder="XXX123" style="background-color:rgb(204, 255, 153)" required>
                 </div>
                 <div class="col-xs-12 col-sm-2 col-2">
                         <label class="form-label"></label>
                         <button class="btn btn-danger form-control remove" onclick="RemoveCars()">Remove Car</button>
                     </div></div>`)
-                    console.log( counter );
-   
-    }
-    $("#Car_Name1").keyup(function(){
-        var tvalue = $( this ).val();
-    console.log(tvalue);
-    })
-    function RemoveCars(){
-        $('#duplicate-row').children().last().remove();
-        counter=counter-1;
-        console.log( counter );
+        console.log(counter);
 
     }
-    $('#app-form').on('submit', function(){
-    var arr = $(this).serializeArray();
-    console.log(arr);
-    // return false; //      /<-- Only, if you don't want the form to be submitted after above commands
-});
-   
+    $("#Car_Name1").keyup(function () {
+        var tvalue = $(this).val();
+        console.log(tvalue);
+    })
+    function RemoveCars() {
+        $('#duplicate-row').children().last().remove();
+        counter = counter - 1;
+        console.log(counter);
+
+    }
+    $('#app-form').on('submit', function () {
+        var arr = $(this).serializeArray();
+        console.log(arr);
+        // return false; //      /<-- Only, if you don't want the form to be submitted after above commands
+    });
+
 </script>
 {%endblock body%}

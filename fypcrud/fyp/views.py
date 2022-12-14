@@ -63,11 +63,15 @@ def Register(request):
 @login_required(login_url="Login")
 def delete_resident(request,id):
     if request.method=='POST':
-        pi=Residents.objects.get(pk=id) #get id of selected resdient entry  
-        cad=Card.objects.get(Card_id=pi.Card_id)  #get the card details of that resident
-        car=Car.objects.get(Car_Plate_number=pi.Car_Plate_number) #get car detail of that resident
-        car.delete() 
-        cad.delete()
+        pi=Residents.objects.get(pk=id) #get id of selected resdient entry
+        cards=Card.objects.all()
+        cars=Car.objects.all()
+        for card in cards:
+            for car in cars :
+                if(car.Car_Plate_number==card.Car_Plate_number.Car_Plate_number):
+                    car.delete()
+            if(card.Resident.CNIC==pi.CNIC):
+                card.delete()
         pi.delete()
     resident=Residents.objects.all()   #get all residents
     car=Car.objects.all()              #get all cars
@@ -103,57 +107,82 @@ def delete_Guest(request,id):
 #Function to show details of selected Resident in form to edit    
 @login_required(login_url="Login")
 def Edit_Resident(request,id):
-    pi=Residents.objects.get(pk=id)
-    car=Car.objects.get(Car_Plate_number=pi.Car_Plate_number)
+    re=Residents.objects.get(Resident_id=id)
+    card=Card.objects.all()
     context={
-        'data':pi,
-        'car':car
+        'data':re,
+        'card':card
     }
     return render(request,'EditResident.html',context)
 #Function to update the Details of selected Resident
 @login_required(login_url="Login")
 def Residentupdate(request,id):
-    try:
-        F_name=request.POST.get('First_Name')
-        L_name=request.POST.get('Last_Name')
-        cnic=request.POST.get('CNIC')
-        Car_name=request.POST.get('Car_Name')
-        cdn=request.POST.get('Car_Plate_number')
-        Car_Plate_Number=cdn.upper()
-        H_no=request.POST.get('H_no')
-        Street=request.POST.get('Street')
-        Sector=request.POST.get('Sector')
-        Phone_number=request.POST.get('Phone_Number')
-        re=Residents.objects.get(Resident_id=id)
-        print(re.Car_Plate_number)
-        # if re.Car_Plate_number != Car_Plate_Number:#check for car plate number updatation
-        ca=Car.objects.get(Car_Plate_number=re.Car_Plate_number)
-        print(ca.Car_Plate_number)
-        ca.Name=Car_name
-        ca.Car_Plate_number=Car_Plate_Number
-        ca.save()
-        card_var=Card.objects.get(Card_id=re.Card_id)
-        card_var.Car_Plate_number=ca
-        card_var.save()
-        re.Car_Plate_number=ca
-        re.First_Name=F_name
-        re.Last_Name=L_name
-        re.CNIC=cnic
-        re.House_no=H_no
-        re.Street=Street
-        re.Sector=Sector
-        re.Phone_Number=Phone_number
-        re.save()
-        resident=Residents.objects.all()
-        car=Car.objects.all()
-        card=Card.objects.all()
-        context={
-            "Residents":resident,
-            "car":car,
-            "card":card,
-        }
-    except:
-        return render(request,'ViewDetailsResident.html',context)
+    CarNames=[]
+    CarNumbers=[]  
+    cars=[]
+    cards=[]
+    F_name=request.POST.get('First_Name')
+    L_name=request.POST.get('Last_Name')
+    cnic=request.POST.get('CNIC')
+    for x in range(0,100):
+        Tag1='Car_Name'+str(x)
+        Cn=request.POST.get(Tag1)
+        if Cn is not None:
+            CarNames.append(Cn)
+        Tag2='Car_Plate_number'+str(x)
+        cpno=request.POST.get(Tag2)
+        if cpno is not None:
+            CarNumbers.append(cpno.upper())
+    H_no=request.POST.get('H_no')
+    street=request.POST.get('Street')
+    sector=request.POST.get('Sector')
+    Phone_number=request.POST.get('Phone_Number')
+    re=Residents.objects.get(Resident_id=id)
+    re.First_Name=F_name
+    re.Last_Name=L_name
+    re.CNIC=cnic
+    re.House_no=H_no
+    re.Street=street
+    re.Sector=sector
+    re.Phone_Number=Phone_number
+    re.save()
+    re=Residents.objects.get(Resident_id=id)
+    crd=Card.objects.all()
+    for c in crd:
+        if(c.Resident.CNIC==re.CNIC):
+            cards.append(c)
+    carr=Car.objects.all()
+    for onecard in cards:
+        for onecar in carr:
+            if(onecar.Car_Plate_number==onecard.Car_Plate_number.Car_Plate_number):
+                cars.append(onecar)
+    newcars=0
+    for index in range(len(CarNames)):
+        newcars=newcars+1
+        if newcars<=len(cars):
+            cars[index].Car_Plate_number=CarNumbers[index]
+            cars[index].Name=CarNames[index]
+            cars[index].save()
+
+            cards[index].Car_Plate_number=cars[index]
+            cards[index].Resident=re
+            cards[index].save()
+        else:
+            bcode=randint(100000000000,999999999999)
+            Car.objects.create(Car_Plate_number=CarNumbers[index],Name=CarNames[index]) #save car details of resident in car table
+            cars.append(Car.objects.get(Car_Plate_number=CarNumbers[index]))
+            Card.objects.create(Car_Plate_number=cars[index],Barcode_id=bcode,type="resident",Resident=re) #save Card details of resident in card table
+            cards.append(Card.objects.get(Car_Plate_number=cars[index]))
+         
+    resident=Residents.objects.all()
+    car=Car.objects.all()
+    card=Card.objects.all()
+    context={
+        "Residents":resident,
+        "car":car,
+        "card":card,
+    }
+
     return render(request,'ViewDetailsResident.html',context)
 
 #Function to show details of selected Guest in form to edit    
@@ -326,11 +355,13 @@ def ResidentRegistration(request):
     elif request.method=='POST':
         CarNames=[]
         CarNumbers=[]  
+        cars=[]
+        cards=[]
         F_name=request.POST.get('First_Name')
         L_name=request.POST.get('Last_Name')
         cnic=request.POST.get('CNIC')
-        Car_name=request.POST.get('Car_Name0')
-        cpn=request.POST.get('Car_Plate_number0')
+        # Car_name=request.POST.get('Car_Name0')
+        # cpn=request.POST.get('Car_Plate_number0')
         for x in range(0,100):
             Tag1='Car_Name'+str(x)
             Cn=request.POST.get(Tag1)
@@ -339,35 +370,29 @@ def ResidentRegistration(request):
             Tag2='Car_Plate_number'+str(x)
             cpno=request.POST.get(Tag2)
             if cpno is not None:
-                CarNumbers.append(cpno)
+                CarNumbers.append(cpno.upper())
         print(CarNames)
         print(CarNumbers)
-        Car_Plate_Number=cpn.upper()
+        # Car_Plate_Number=cpn.upper()
         H_no=request.POST.get('H_no')
         street=request.POST.get('Street')
         sector=request.POST.get('Sector')
         Phone_number=request.POST.get('Phone_Number')
-        bcode=randint(100000000000,999999999999)
-        Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of resident in car table
-        car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
-        Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="resident") #save Card details of resident in card table
-        card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
-            
         Residents.objects.create(
                 First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                Phone_Number=Phone_number,Card_id=card,Car_Plate_number=car,
-                House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
-
-        if 'Issuecard' in request.POST:
-            re=Residents.objects.get(CNIC=cnic)
-            context={
-                        'type':'Resident',
-                            're':re,
-                            'car_name':car.Name,
-                            'card':card,
-                            
-                    }
-            return render(request,'IssueCard.html',context)
+                Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
+        re=Residents.objects.get(CNIC=cnic)
+        for index in range(len(CarNames)):
+            bcode=randint(100000000000,999999999999)
+            Car.objects.create(Car_Plate_number=CarNumbers[index],Name=CarNames[index]) #save car details of resident in car table
+            cars.append(Car.objects.get(Car_Plate_number=CarNumbers[index]))
+            Card.objects.create(Car_Plate_number=cars[index],Barcode_id=bcode,type="resident",Resident=re) #save Card details of resident in card table
+            abc=Card.objects.get(Car_Plate_number=cars[index])
+            print(abc.Resident)
+            cards.append(Card.objects.get(Car_Plate_number=cars[index]))
+        print(cars)
+        print(cards)  
+        
     # try:
         
         
@@ -394,10 +419,31 @@ def issuecard(request,id,type):
                         'type':re.type,
                             're':re,
                             'car_name':car.Name,
+                            'car_plate_number':car.Car_Plate_number,
                             'card':card
                     }
     return render(request,'IssueCard.html',context)
-
+@login_required(login_url='Login')
+def ViewSpecificResident(request,id):
+    re=Residents.objects.get(Resident_id=id)
+    card=Card.objects.all()
+    context={
+                            're':re,
+                            'card':card
+                    }
+    return render(request,'ViewSpecificResident.html',context)
+@login_required(login_url='Login')
+def issueresidentcard(request,cardid,residentid):
+    re=Residents.objects.get(Resident_id=residentid)
+    card=Card.objects.get(Card_id=cardid)
+    context={
+                            'type':'Resident',
+                            're':re,
+                            'car_name':card.Car_Plate_number.Name,
+                            'car_plate_number':card.Car_Plate_number.Car_Plate_number,
+                            'card':card
+                    }
+    return render(request,'IssueCard.html',context)
 
 #Function to view details of residents 
 @login_required(login_url="Login")
@@ -514,8 +560,20 @@ def approve_tempresident(request,id):
     pi.delete()
     return redirect('approvalpage')
 @login_required(login_url="Login")
-def AddCars(request):
-    return redirect('ResidentRegistration')
+def removecar(request,cardid,residentid):
+    
+    card=Card.objects.get(Card_id=cardid)
+    car=Car.objects.get(Car_Plate_number=card.Car_Plate_number.Car_Plate_number)
+    print(card.Car_Plate_number.Name)
+    car.delete()
+    card.delete()
+    re=Residents.objects.get(Resident_id=residentid)
+    card=Card.objects.all()
+    context={
+        'data':re,
+        'card':card
+    }
+    return render(request,'EditResident.html',context)
 
 
 

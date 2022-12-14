@@ -24,14 +24,12 @@
                     <thead>
                         <tr>
                             <th scope="col">Sr #</th>
-                            <th scope="col">Plate number</th>
-                            <th scope="col">Car Name</th>
                             <th scope="col">CNIC</th>
                             <th scope="col">First Name</th>
                             <th scope="col">Last Name</th>
                             <th scope="col">Phone No</th>
                             <th scope="col"> Address</th>
-                            <th scope="col"> IssueCard</th>
+                            <th scope="col"> View Details</th>
                             <th scope="col"> Actions</th>
                             <th scope="col"> Actions</th>
 
@@ -41,24 +39,13 @@
                         <tr>
                         {% for data in Residents %}
                         <td>{{ forloop.counter }}</td>
-                                <td>{{ data.Car_Plate_number }}</td> 
-                                {% with w=data.Car_Plate_number %}     
-                                {% for ca in car %}
-                                {%with x=ca.Car_Plate_number %}
-                                {% if x == w.Car_Plate_number %}
-                                <td>{{ca.Name}}</td>
-                                {% endif %}
-                                
-                                {%endwith%}
-                                {%endfor%}
-                                {% endwith %}
                             <td>{{ data.CNIC }}</td>
                                 <td>{{ data.First_Name }}</td>
                                 <td>{{ data.Last_Name }}</td>
                                 <td>{{ data.Phone_Number }}</td>
                                 <td>House No:{{ data.House_no }} Street:{{data.Street}} Sector:{{data.Sector}}</td>
                                 <td>
-                                    <a href="{% url 'issuecard' data.Resident_id data.type %}">IssueCard</a>
+                                    <a href="{% url 'ViewSpecificResident' data.Resident_id %}">View Details</a>
                                 </td>
 
                                 <td>

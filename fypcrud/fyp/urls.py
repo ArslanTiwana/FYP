@@ -17,10 +17,16 @@ urlpatterns = [
 
     path("GuestRegistration", views.GuestRegistration, name='GuestRegistration'),
     path("ResidentRegistration", views.ResidentRegistration, name='ResidentRegistration'),
-    path("AddCars",views.AddCars,name="AddCars"),
+    path("removecar/<int:cardid>/<int:residentid>",views.removecar,name="removecar"),
+
+
 
 
     path("ViewDetailsResident", views.ViewDetailsResident, name='ViewDetailsResident'),
+    path("ViewSpecificResident/<int:id>", views.ViewSpecificResident, name='ViewSpecificResident'),
+    path("issueresidentcard/<int:cardid>/<int:residentid>",views.issueresidentcard,name='issueresidentcard'),
+
+
     path("ViewDetailsGuest", views.ViewDetailsGuest, name='ViewDetailsGuest'),
 
     path("barcode", views.barcode, name='barcode'),
