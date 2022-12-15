@@ -19,7 +19,6 @@ from . forms import userregistrationform
 from django.contrib.auth.decorators import login_required
 from .decorators import  allowed_users, admin_only
 from django.contrib.auth.models import Group
-from fyp.models import temproryresidentdata
 from fyp.models import history
 import datetime
 from PIL import Image
@@ -63,15 +62,23 @@ def Register(request):
 @login_required(login_url="Login")
 def delete_resident(request,id):
     if request.method=='POST':
+        cardss=[]
+        cars=[]
         pi=Residents.objects.get(pk=id) #get id of selected resdient entry
         cards=Card.objects.all()
-        cars=Car.objects.all()
         for card in cards:
-            for car in cars :
-                if(car.Car_Plate_number==card.Car_Plate_number.Car_Plate_number):
-                    car.delete()
-            if(card.Resident.CNIC==pi.CNIC):
-                card.delete()
+            if card.Resident is not None:
+                if(card.Resident.CNIC==pi.CNIC):
+                    cardss.append(card)
+        print(cardss)
+        for card in cardss:
+            car=Car.objects.get(Car_Plate_number=card.Car_Plate_number.Car_Plate_number)
+            cars.append(car)
+        print(cars)
+        for card in cardss:
+            card.delete()
+        for car in cars:
+            car.delete()
         pi.delete()
     resident=Residents.objects.all()   #get all residents
     car=Car.objects.all()              #get all cars
@@ -149,8 +156,9 @@ def Residentupdate(request,id):
     re=Residents.objects.get(Resident_id=id)
     crd=Card.objects.all()
     for c in crd:
-        if(c.Resident.CNIC==re.CNIC):
-            cards.append(c)
+        if c.Resident is not None:
+            if(c.Resident.CNIC==re.CNIC):
+                cards.append(c)
     carr=Car.objects.all()
     for onecard in cards:
         for onecar in carr:
@@ -254,73 +262,131 @@ def barcode(request):
             }
             return(render(request,'barcode.html',context))
      
-        val = str(cad.Car_Plate_number)
-        print("Local Registered plate number   "+val)
+        # val = str(cad.Car_Plate_number)
+        # print("Local Registered plate number   "+val)
 
-        try:
-            camera=cv2.VideoCapture(0)
+        # try:
+        #     camera=cv2.VideoCapture(0)
 
-            while True:
-                _,Image=camera.read()
-                cv2.imshow("text recognition",Image)
-                if cv2.waitKey(1)& 0xFF==ord('s'):
-                    cv2.imwrite('test.jpg',Image)
-                    break
-            camera.release()
-            cv2.destroyAllWindows()
+        #     while True:
+        #         _,Image=camera.read()
+        #         cv2.imshow("text recognition",Image)
+        #         if cv2.waitKey(1)& 0xFF==ord('s'):
+        #             cv2.imwrite('test.jpg',Image)
+        #             break
+        #     camera.release()
+        #     cv2.destroyAllWindows()
 
             
-            regions = ['mx', 'us-ca'] # Change to your country
-            with open('test.jpg', 'rb') as fp:
-                response = requests.post(
-                    'https://api.platerecognizer.com/v1/plate-reader/',
-                    data=dict(regions=regions),  # Optional
-                    files=dict(upload=fp),
-                    headers={'Authorization': 'Token 6f7ccd3628dcd2d791778bd42d1f3d840f6f0abb'})
-                    #additional token number 'Token 0f1bca95c7fa16cf31122f52ab579db44b41273e'
-            result=response.json()['results']
-            res=result[0]
-            res1=res['plate'].upper()
-            res2=str(res1)
-            print("extracted plate number   "+res2)
-            if res2==val:
-                print("matched")
-                print("Card and Car number plate matched")
-                matchedmsg="Card and Car number plate matched"
-                if cad.type=='guest':
-                    guest=Guests.objects.get(Card_id=cad.Card_id)
-                    History=history.objects.all()
-                    try:
-                        if guest.isentered==False:
-                            
-                            history.objects.create(Guest_id=guest.Guest_id,Entry_time=datetime.datetime.now())
-                            guest.isentered=True
-                            guest.save()
-                        else:
-                            for hist in History:
-                                if hist.Guest_id==guest.Guest_id:
-                                    if hist.Exit_time==None:
-                                        hist.Exit_time=datetime.datetime.now()
-                                        hist.Guest_id=guest.Guest_id
-                                        hist.save()
-                            guest.isentered=False
-                            guest.save()
-                    except:
-                        return render(request,'barcode.html',context)
-            else:
-                print("notmatched")
-                print("Car's Number Plate Not Authenticated")
-                matchedmsg="Car's Number Plate Not Authenticated"
-            context={
-                        "msg":cad.Car_Plate_number,
-                        "message":"Card is Registered Against Car Plate Number",
-                        "matched":matchedmsg
-                        
-                    }
-            
-            return render(request,'barcode.html',context)
-        except:
-            matchedmsg=""
+        #     regions = ['mx', 'us-ca'] # Change to your country
+        #     with open('test.jpg', 'rb') as fp:
+        #         response = requests.post(
+        #             'https://api.platerecognizer.com/v1/plate-reader/',
+        #             data=dict(regions=regions),  # Optional
+        #             files=dict(upload=fp),
+        #             headers={'Authorization': 'Token 6f7ccd3628dcd2d791778bd42d1f3d840f6f0abb'})
+        #             #additional token number 'Token 0f1bca95c7fa16cf31122f52ab579db44b41273e'
+        #     result=response.json()['results']
+        #     res=result[0]
+        #     res1=res['plate'].upper()
+        #     res2=str(res1)
+        #     print("extracted plate number   "+res2)
+        #     if res2==val:
+        #         print("matched")
+        #         print("Card and Car number plate matched")
+        #         matchedmsg="Card and Car number plate matched"
+        History=history.objects.all()
+
+        if cad.type=='guest':
+            print("is guest")
+
+            guest=Guests.objects.get(Card_id=cad.Card_id)
+    
+            try:
+                print("hey")
+                if (guest.isentered==False):
+                    history.objects.create(Driver_id=guest.Guest_id,Entry_time=datetime.datetime.now(),Card_id=cad)
+                    guest.isentered=True
+                    guest.save()
+                elif guest.isentered==True:
+                    if(guest.GuestType=="OneTime"):
+                        car=Car.objects.get(Car_Plate_number=guest.Car_Plate_number) #get car detail of that Guest
+                        car.delete()
+                        cad.delete()
+                        guest.delete()
+                    else:
+                        for hist in History:
+                            if (hist.Driver_id==guest.Guest_id):
+                                if hist.Exit_time is None:
+                                    hist.Exit_time=datetime.datetime.now()
+                                    hist.Driver_id=guest.Guest_id
+                                    hist.save()
+                        guest.isentered=False
+                        guest.save()
+
+            except:
+                return render(request,'barcode.html',context)
+        elif cad.type=='resident':
+            print("is resident")
+            resident=Residents.objects.get(CNIC=cad.Resident)
+            historiesexittimes=[]
+            for histo in History:
+                if histo.Card_id==cad:
+                    if histo.Exit_time is not None:
+                        historiesexittimes.append(histo.Exit_time.hour)
+            print(historiesexittimes)
+            try:
+                print("hey from resident")
+                if cad.isentered==False:
+                    history.objects.create(Driver_id=resident.Resident_id,Entry_time=datetime.datetime.now(),Card_id=cad)
+                    cad.isentered=True
+                    cad.save()
+                elif cad.isentered==True:
+                    for hist in History:
+                        if (hist.Card_id==cad):
+                            if hist.Exit_time is None:
+                                hist.Exit_time=datetime.datetime.now()
+                                hist.Driver_id=resident.Resident_id
+                                hist.save()
+                    cad.isentered=False
+                    cad.save()
+                                
+                # if (resident.isentered==False):
+                #     history.objects.create(Driver_id=resident.Resident_id,Entry_time=datetime.datetime.now(),Card_id=cad)
+                #     resident.isentered=True
+                #     cad.isentered=True
+                #     cad.save()
+                #     resident.save()
+                # elif resident.isentered==True:
+                #         if cad.isentered==True:
+                #             for hist in History:
+                #                 if (hist.Driver_id==resident.Resident_id):
+                #                     if hist.Exit_time is None:
+                #                         hist.Exit_time=datetime.datetime.now()
+                #                         hist.Driver_id=resident.Resident_id
+                #                         hist.save()
+                #     resident.isentered=False
+                #     cad.isentered=False
+                #     cad.save()
+                #     resident.save()
+
+            except:
+                return render(request,'barcode.html',context)
+
+        else:
+            print("notmatched")
+            print("Car's Number Plate Not Authenticated")
+            matchedmsg="Car's Number Plate Not Authenticated"
+        context={
+                    # "msg":cad.Car_Plate_number,
+                    "message":"Card is Registered Against Car Plate Number",
+                    # "matched":matchedmsg
+                    
+                }
+        
+        return render(request,'barcode.html',context)
+    # except:
+    #     matchedmsg=""
         
     return render(request,'barcode.html')
     
@@ -333,26 +399,22 @@ def historys(request,id):
         'History':History,
     }
     return render(request,'historys.html',context)
-
+    
+@login_required(login_url="Login")
+def ResidentHistory(request,id):
+    resident=Residents.objects.get(Resident_id=id)
+    History =history.objects.all()
+    context={
+        'resident':resident,
+        'History':History,
+    }
+    return render(request,'ResidentHistory.html',context)
 
 
 #Function to get details of resident from form and save into Resident table 
 @login_required(login_url="Login")
 def ResidentRegistration(request):
-    if 'submitforapproval' in request.POST:
-        F_name=request.POST.get('First_Name')
-        L_name=request.POST.get('Last_Name')
-        cnic=request.POST.get('CNIC')
-        Car_name=request.POST.get('Car_Name')
-        Car_Plate_Number=request.POST.get('Car_Plate_number')
-        H_no=request.POST.get('H_no')
-        street=request.POST.get('Street')
-        sector=request.POST.get('Sector')
-        Phone_number=request.POST.get('Phone_Number')
-        temproryresidentdata.objects.create(First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                    Phone_Number=Phone_number,Car_Name=Car_name,Car_Plate_number=Car_Plate_Number.upper(),
-                    House_no=H_no,Street=street,Sector=sector)
-    elif request.method=='POST':
+    if request.method=='POST':
         CarNames=[]
         CarNumbers=[]  
         cars=[]
@@ -378,9 +440,14 @@ def ResidentRegistration(request):
         street=request.POST.get('Street')
         sector=request.POST.get('Sector')
         Phone_number=request.POST.get('Phone_Number')
-        Residents.objects.create(
-                First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
+        if 'submitforapproval' in request.POST:
+            Residents.objects.create(
+                    First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+                    Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident",IsTemporary=True) #save details Resident in table
+        else:
+            Residents.objects.create(
+                    First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+                    Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
         re=Residents.objects.get(CNIC=cnic)
         for index in range(len(CarNames)):
             bcode=randint(100000000000,999999999999)
@@ -392,16 +459,6 @@ def ResidentRegistration(request):
             cards.append(Card.objects.get(Car_Plate_number=cars[index]))
         print(cars)
         print(cards)  
-        
-    # try:
-        
-        
-    # except:
-    #         context={
-    #                     'msg':"Data Not Added"
-                            
-    #                 }
-    #         return render(request,'ResidentRegistration.html',context)
     return render(request,'ResidentRegistration.html')
 
 @login_required(login_url='Login')
@@ -475,43 +532,41 @@ def ViewDetailsGuest(request):
 
 @login_required(login_url="Login")
 def GuestRegistration(request):
-    try:
-        if request.method=='POST':
-            F_name=request.POST.get('First_Name')
-            L_name=request.POST.get('Last_Name')
-            cnic=request.POST.get('CNIC')
-            Car_name=request.POST.get('Car_Name')
-            cpn=request.POST.get('Car_Plate_number')
-            Car_Plate_Number=cpn.upper()
-            H_no=request.POST.get('H_no')
-            street=request.POST.get('Street')
-            sector=request.POST.get('Sector')
-            bcode=randint(100000000000,999999999999)
-            Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
-            car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
-            Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="guest")#save Card details of Guest in card table
-            
-            card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
-            Guests.objects.create(
-                First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                Card_id=card,Car_Plate_number=car,
-                House_no=H_no,Street=street,Sector=sector,type="guest")#save details Guest in table
+    
+    if request.method=='POST':
+        F_name=request.POST.get('First_Name')
+        L_name=request.POST.get('Last_Name')
+        cnic=request.POST.get('CNIC')
+        Car_name=request.POST.get('Car_Name')
+        cpn=request.POST.get('Car_Plate_number')
+        Car_Plate_Number=cpn.upper()
+        H_no=request.POST.get('H_no')
+        street=request.POST.get('Street')
+        sector=request.POST.get('Sector')
+        GuestType=request.POST.get('GuestType')
+        bcode=randint(100000000000,999999999999)
+        Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
+        car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
+        Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="guest")#save Card details of Guest in card table
+        
+        card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
+        Guests.objects.create(
+            First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+            Card_id=card,Car_Plate_number=car,
+            House_no=H_no,Street=street,Sector=sector,type="guest"
+            ,GuestType=GuestType
+            )#save details Guest in table
 
-            if 'Issuecard' in request.POST:
-                re=Guests.objects.get(CNIC=cnic)
-                context={
-                    'type':'Guest',
-                        're':re,
-                        'car_name':car.Name,
-                        'card':card
-                }
-                return render(request,'IssueCard.html',context)
-    except:
+        if 'Issuecard' in request.POST:
+            re=Guests.objects.get(CNIC=cnic)
             context={
-                        'msg':"Data Not Added"
-                            
-                    }
-            return render(request,'GuestRegistration.html',context)
+                'type':'Guest',
+                    're':re,
+                    'car_name':car.Name,
+                    'card':card
+            }
+            return render(request,'IssueCard.html',context)
+   
 
     return render(request,'GuestRegistration.html')
 
@@ -531,37 +586,55 @@ def profile(request):
 @admin_only
 
 def approvalpage(request):
-    tempresident=temproryresidentdata.objects.all()
-   
+    resident=Residents.objects.all()
+    car=Car.objects.all()
+    card=Card.objects.all()
     context={
-        'data':tempresident,
-        
+        "Residents":resident,
+        "car":car,
+        "card":card,
     }
     return render(request,'approvalpage.html',context)
 @login_required(login_url="Login")
 def delete_tempresident(request,id):
-   
+    cardss=[]
+    cars=[]
+    pi=Residents.objects.get(pk=id) #get id of selected resdient entry
+    cards=Card.objects.all()
+    for card in cards:
+        if card.Resident is not None:
+            if(card.Resident.CNIC==pi.CNIC):
+                cardss.append(card)
+    print(cardss)
+    for card in cardss:
+        car=Car.objects.get(Car_Plate_number=card.Car_Plate_number.Car_Plate_number)
+        cars.append(car)
+    print(cars)
+    for card in cardss:
+        card.delete()
+    for car in cars:
+        car.delete()
+    pi.delete()
+    resident=Residents.objects.all()   #get all residents
+    car=Car.objects.all()              #get all cars
+    card=Card.objects.all()            #get all cards
+    context={
+        "Residents":resident,
+        "car":car,
+        "card":card,
+    }
+    return render(request,'approvalpage.html',context)
     pi=temproryresidentdata.objects.get(pk=id) #get id of selected resdient entry  
     pi.delete()
     return redirect('approvalpage')
 @login_required(login_url="Login")
 def approve_tempresident(request,id):
-    pi=temproryresidentdata.objects.get(pk=id)
-   
-    Car.objects.create(Car_Plate_number=pi.Car_Plate_number,Name=pi.Car_Name) #save car details of resident in car table
-    car=Car.objects.get(Car_Plate_number=pi.Car_Plate_number)
-    Card.objects.create(Car_Plate_number=car,Barcode_id=randint(100000000000,999999999999)) #save Card details of resident in card table
-    card=Card.objects.get(Car_Plate_number=pi.Car_Plate_number)
-        
-    Residents.objects.create(
-            First_Name=pi.First_Name,Last_Name=pi.Last_Name,CNIC=pi.CNIC,
-            Phone_Number=pi.Phone_Number,Card_id=card,Car_Plate_number=car,
-            House_no=pi.House_no,Street=pi.Street,Sector=pi.Sector) #save details Resident in table
-    pi.delete()
+    pi=Residents.objects.get(pk=id)
+    pi.IsTemporary=False
+    pi.save()
     return redirect('approvalpage')
 @login_required(login_url="Login")
 def removecar(request,cardid,residentid):
-    
     card=Card.objects.get(Card_id=cardid)
     car=Car.objects.get(Car_Plate_number=card.Car_Plate_number.Car_Plate_number)
     print(card.Car_Plate_number.Name)

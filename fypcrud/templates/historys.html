@@ -26,11 +26,11 @@
                         
                     {% for data in History %}
                     
-                    {% if data.Guest_id == guest.Guest_id %}
+                    {% if data.Driver_id == guest.Guest_id %}
                             <th>{{ forloop.counter }}</th>
                            
                             <th scope="col">{{data.Entry_time}}</th>
-                            {% if data.Guest_id == guest.Guest_id %}
+                            {% if data.Driver_id == guest.Guest_id %}
                                 {%if data.Exit_time == "None"%}
                                 <th scope="col" >---</th> 
                                 {%else%}

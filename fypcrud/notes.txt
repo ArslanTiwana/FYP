@@ -1,0 +1,35 @@
+elif cad.type=='resident':
+            print("is resident")
+            resident=Residents.objects.get(CNIC=cad.Resident)
+            try:
+                print("hey from resident")
+                if cad.isentered==False:
+                    if resident.isentered==False:
+                        history.objects.create(Driver_id=resident.Resident_id,Entry_time=datetime.datetime.now(),Card_id=cad)
+                        resident.isentered=True
+                        resident.save()
+                    elif resident.isentered==True:
+                        history.objects.create(Driver_id=resident.Resident_id,Exit_time=datetime.datetime.now(),Card_id=cad)
+                        resident.isentered=False
+                        resident.save()   
+                    cad.isentered=True
+                    cad.save()
+                elif cad.isentered==True:
+                    for hist in History:
+                        if (hist.Card_id==cad):
+                            if resident.isentered==True:
+                                if hist.Exit_time is None:
+                                    hist.Exit_time=datetime.datetime.now()
+                                    hist.Driver_id=resident.Resident_id
+                                    hist.save()
+                                resident.isentered=False
+                                resident.save()
+                            elif resident.isentered==False:
+                                if hist.Entry_time is None:
+                                    hist.Entry_time=datetime.datetime.now()
+                                    hist.Driver_id=resident.Resident_id
+                                    hist.save()
+                                resident.isentered=True
+                                resident.save()
+                    cad.isentered=False
+                    cad.save()

@@ -25,6 +25,7 @@ urlpatterns = [
     path("ViewDetailsResident", views.ViewDetailsResident, name='ViewDetailsResident'),
     path("ViewSpecificResident/<int:id>", views.ViewSpecificResident, name='ViewSpecificResident'),
     path("issueresidentcard/<int:cardid>/<int:residentid>",views.issueresidentcard,name='issueresidentcard'),
+    path("ResidentHistory/<int:id>", views.ResidentHistory, name='ResidentHistory'),
 
 
     path("ViewDetailsGuest", views.ViewDetailsGuest, name='ViewDetailsGuest'),

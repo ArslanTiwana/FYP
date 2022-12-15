@@ -7,7 +7,7 @@
                 <head>
                     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
                 </head>
-                <script>
+                <!-- <script>
                     $(document).ready(function () {
                         $("button").hide();
                         $("input").keyup(function(){
@@ -17,13 +17,13 @@
                         });
                      
                     });
-                </script>
+                </script> -->
                 <br>
                 <br>
                 
                 <h2>Driver Entry/Exit Page </h2>
                 <div style="margin-top: 25px;">
-                    <form action="" method="POST">
+                    <form action="" method="POST" id="app-form">
                         {% csrf_token %}
                        
                         <div class="mb-3">
@@ -38,5 +38,11 @@
                     <h3>{{error_message}} </h3>
                     <h3>{{message}} {{msg}} </h3>
                     <h3>{{matched}} </h3>
-
+                    <!-- <script>
+                        $('#app-form').on('submit', function () {
+                        var arr = $(this).serializeArray();
+                        console.log(arr);
+                        return false; //      /<-- Only, if you don't want the form to be submitted after above commands
+                    });
+                </script> -->
                     {%endblock body%}

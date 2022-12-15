@@ -32,18 +32,23 @@
                             <th scope="col"> View Details</th>
                             <th scope="col"> Actions</th>
                             <th scope="col"> Actions</th>
+                            <th scope="col"> Actions</th>
 
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                         {% for data in Residents %}
+                        {%if data.IsTemporary == False%}
                         <td>{{ forloop.counter }}</td>
                             <td>{{ data.CNIC }}</td>
                                 <td>{{ data.First_Name }}</td>
                                 <td>{{ data.Last_Name }}</td>
                                 <td>{{ data.Phone_Number }}</td>
                                 <td>House No:{{ data.House_no }} Street:{{data.Street}} Sector:{{data.Sector}}</td>
+                                <td>
+                                    <a href="{% url 'ResidentHistory' data.Resident_id %}">View History</a>
+                                </td>
                                 <td>
                                     <a href="{% url 'ViewSpecificResident' data.Resident_id %}">View Details</a>
                                 </td>
@@ -61,7 +66,7 @@
                                 </td>
                             </tr>
                         </thead>
-                        
+                        {%endif%}
                         {% endfor %}
 
                    

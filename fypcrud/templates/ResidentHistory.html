@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{%load static%}
+
+{%block title%}
+Details
+{%endblock title%}
+{%block body%}
+
+<h1 style="margin-top: 75px;">History details</h1>
+<h4>Name: {{resident.First_Name}} {{resident.Last_Name}}</h4>
+<h4>CNIC: {{resident.CNIC}}</h4>
+<h4>Address: House No:{{ resident.House_no }} Street:{{resident.Street}} Sector:{{resident.Sector}}</h4>
+<br>
+<table class="table" id="table_id">
+    <thead>
+        <tr>
+            <th scope="col">Car</th>
+            <th scope="col">Entry Date Time</th>
+            <th scope="col">Exit Date Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+
+            {% for data in History %}
+
+            {% if data.Driver_id == resident.Resident_id %}
+            <th>{{data.Card_id.Car_Plate_number}}</th>
+
+            <th scope="col">{{data.Entry_time}}</th>
+            {% if data.Driver_id == resident.Resident_id %}
+            {%if data.Exit_time == "None"%}
+            <th scope="col">---</th>
+            {%else%}
+            <th scope="col">{{ data.Exit_time }}</th>
+            {%endif%}
+            {%endif%}
+            </td>
+        </tr>
+
+        {%endif%}
+
+        {% endfor %}
+
+
+    </tbody>
+</table>
+</div>
+
+{%endblock body%}
