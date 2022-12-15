@@ -333,7 +333,18 @@ def barcode(request):
             for histo in History:
                 if histo.Card_id==cad:
                     if histo.Exit_time is not None:
-                        historiesexittimes.append(histo.Exit_time.hour)
+                        historiesexittimes.append(histo.Exit_time.hour*10000+histo.Exit_time.minute*100+histo.Exit_time.second)
+            print(max(historiesexittimes))
+            print(min(historiesexittimes))
+            minlimittime=min(historiesexittimes)-(1*10000)
+            maxlimittime=max(historiesexittimes)+(1*10000)
+            current_date = datetime.datetime.now()
+            timenow=current_date.hour*10000 +current_date.minute*100 +current_date.second
+
+            
+
+            avg=sum(historiesexittimes)/len(historiesexittimes)
+            print(avg)
             print(historiesexittimes)
             try:
                 print("hey from resident")
@@ -342,6 +353,10 @@ def barcode(request):
                     cad.isentered=True
                     cad.save()
                 elif cad.isentered==True:
+                    if timenow<minlimittime:
+                        print("alert")
+                    elif timenow>maxlimittime:
+                        print("alert")
                     for hist in History:
                         if (hist.Card_id==cad):
                             if hist.Exit_time is None:
