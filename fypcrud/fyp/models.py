@@ -46,7 +46,7 @@ class Card(models.Model):
     type=models.CharField(max_length=20,default="resident")
     Resident=models.ForeignKey(Residents,blank=True,null=True,on_delete=models.SET_NULL)
     isentered=models.BooleanField(default=False)
-    # Guest=models.ForeignKey(Guests,blank=True,null=True,on_delete=models.SET_NULL)
+    isrejected=models.BooleanField(default=False)
     def __int__(self):
         return self.Card_id
     def save(self,*args,**kwargs):
