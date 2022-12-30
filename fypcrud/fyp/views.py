@@ -27,6 +27,7 @@ import requests
 from pprint import pprint
 import time
 from django.core.mail import send_mail
+from django.db import IntegrityError
 import serial
 ser=serial.Serial('COM5',baudrate=9600,timeout=1)
 
@@ -160,7 +161,11 @@ def Residentupdate(request,id):
     re.Sector=sector
     re.Phone_Number=Phone_number
     re.Email=email
-    re.save()
+    try:
+        re.save()
+    except IntegrityError as e: 
+        if 'UNIQUE constraint' in e.args[0]:
+            return HttpResponse("Resident With This CNIC Exists")
     re=Residents.objects.get(Resident_id=id)
     crd=Card.objects.all()
     for c in crd:
@@ -224,21 +229,36 @@ def Guestupdate(request,id):
     Street=request.POST.get('Street')
     Sector=request.POST.get('Sector')
     re=Guests.objects.get(Guest_id=id)
-    ca=Car.objects.get(Car_Plate_number=re.Car_Plate_number)
-    card=Card.objects.get(Car_Plate_number=re.Car_Plate_number)
-    ca.delete()
-    Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
-    ca=Car.objects.get(Car_Plate_number=Car_Plate_Number)
-    card.Car_Plate_number=ca
-    card.save()
-    re.Car_Plate_number=ca
+    print(Car_Plate_Number)
+    a=str(re.Car_Plate_number)
+    print(a)
+    if (Car_Plate_Number==a):
+        print("equal")
+    else:
+        try:
+            if Car_Plate_Number != re.Car_Plate_number:
+                Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
+        except IntegrityError as e: 
+            if 'UNIQUE constraint' in e.args[0]:
+                return HttpResponse("Car With This Plate Number Exists")
+        carr=Car.objects.get(Car_Plate_number=re.Car_Plate_number)
+        card=Card.objects.get(Car_Plate_number=re.Car_Plate_number)
+        carr.delete()
+        ca=Car.objects.get(Car_Plate_number=Car_Plate_Number)
+        card.Car_Plate_number=ca
+        card.save()
+        re.Car_Plate_number=ca
     re.First_Name=F_name
     re.Last_Name=L_name
     re.CNIC=cnic
     re.House_no=H_no
     re.Street=Street
     re.Sector=Sector
-    re.save()
+    try:
+        re.save()
+    except IntegrityError as e: 
+        if 'UNIQUE constraint' in e.args[0]:
+            return HttpResponse("Guest With This CNIC Exists")
     guest=Guests.objects.all()
     car=Car.objects.all()
     card=Card.objects.all()
@@ -378,25 +398,25 @@ def extractNumber():
         return "A"
 
 
-
 @login_required(login_url="Login")
-def barcode(request):
+def allow(request):
     if request.method=='POST':
-       
         num=request.POST.get('bid')
         try:
             barcodeId=int(num)
             barcodeId=barcodeId//10
         except:
-            print("invalid")
+            print("input empty")
         try:
             cad=Card.objects.get(Barcode_id=barcodeId) 
         except:
             if 'allow' in request.POST:
                 ser.write(b'1')
+                print("gateopening")
             else:
                 ser.write(b'2')
-            return(render(request,'barcode.html'))
+                print("card not recognized")
+            return(render(request,'allow.html'))
         
         localCarNumber = str(cad.Car_Plate_number)
         print("Local Registered plate number   "+localCarNumber) #print
@@ -407,6 +427,7 @@ def barcode(request):
             if cad.type=='guest':
                 guestHistory(cad)
                 ser.write(b'1')
+                print("gateopening")
             elif cad.type=='resident':
                 check=cad.isentered
                 if 'allow' in request.POST:
@@ -414,18 +435,60 @@ def barcode(request):
                 if check:
                     alert=alertOnHistory(cad)
                     if alert==True:
-                        ser.write(b'2')
-                        return(render(request,'barcode.html'))
+                        ser.write(b'4')
+                        print("abnormal exit")
+                        return(render(request,'allow.html'))
                 resdientHistory(cad)
                 ser.write(b'1')
+                print("gateopening")
         else:
             if 'allow' in request.POST:
                 ser.write(b'1')
+                print("gateopening")
             else:
                 ser.write(b'3')
                 print("Car's Number Plate Not Authenticated")   #print
+            return(render(request,'allow.html'))         
+    return render(request,'allow.html')
+def barcode(request):
+    if request.method=='POST':
+        num=request.POST.get('bid')
+        try:
+            barcodeId=int(num)
+            barcodeId=barcodeId//10
+        except:
+            print("invalid input")
+        try:
+            cad=Card.objects.get(Barcode_id=barcodeId) 
+        except:
+            ser.write(b'2')
+            print("card not recognized")
             return(render(request,'barcode.html'))
-             
+        localCarNumber = str(cad.Car_Plate_number)
+        print("Local Registered plate number   "+localCarNumber) #print
+        extractedNumber=extractNumber()
+        print("extracted plate number   "+extractedNumber) #print
+        if extractedNumber==localCarNumber:
+            print("Card and Car number plate matched")     #print               
+            if cad.type=='guest':
+                guestHistory(cad)
+                ser.write(b'1')
+                print("gateopening")
+            elif cad.type=='resident':
+                check=cad.isentered
+                if check:
+                    alert=alertOnHistory(cad)
+                    if alert==True:
+                        ser.write(b'4')
+                        print("abnormal exit")
+                        return(render(request,'barcode.html'))
+                resdientHistory(cad)
+                ser.write(b'1')
+                print("gateopening")
+        else:
+            ser.write(b'3')
+            print("Car's Number Plate Not Authenticated")   #print
+            return(render(request,'barcode.html'))   
     return render(request,'barcode.html')
     
 @login_required(login_url="Login")
@@ -481,24 +544,56 @@ def ResidentRegistration(request):
         email=request.POST.get('Email')
 
         if 'submitforapproval' in request.POST:
-            Residents.objects.create(
-                    First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                    Email=email,Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident",IsTemporary=True) #save details Resident in table
+            try:
+                Residents.objects.create(
+                        First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+                        Email=email,Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident",IsTemporary=True) #save details Resident in table
+            except IntegrityError as e: 
+                if 'UNIQUE constraint' in e.args[0]:
+                    context={
+                        "msg":"Resident with this CNIC Already Exists"
+                    }
+                    return render(request,'ResidentRegistration.html',context)
         else:
-            Residents.objects.create(
-                    First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-                    Email=email,Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
+            try:
+                Residents.objects.create(
+                        First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+                        Email=email,Phone_Number=Phone_number,House_no=H_no,Street=street,Sector=sector,type="resident") #save details Resident in table
+            except IntegrityError as e: 
+                if 'UNIQUE constraint' in e.args[0]:
+                    context={
+                        "msg":"Resident with this CNIC Already Exists"
+                    }
+                    return render(request,'ResidentRegistration.html',context)
         re=Residents.objects.get(CNIC=cnic)
         for index in range(len(CarNames)):
             bcode=randint(100000000000,999999999999)
-            Car.objects.create(Car_Plate_number=CarNumbers[index],Name=CarNames[index]) #save car details of resident in car table
-            cars.append(Car.objects.get(Car_Plate_number=CarNumbers[index]))
+            try:
+                Car.objects.create(Car_Plate_number=CarNumbers[index],Name=CarNames[index]) #save car details of resident in car table
+                cars.append(Car.objects.get(Car_Plate_number=CarNumbers[index]))
+            except IntegrityError as e: 
+                if 'UNIQUE constraint' in e.args[0]:
+                    re.delete()
+                    
+                    context={
+                        "msg":"Car with "+CarNumbers[index]+" Plate Number Already Exists"
+                    }
+                    for s in range(len(cars)):
+                        carrr=cars[s]
+                        carddd=cards[s]
+                        carddd.delete()
+                        carrr.delete()
+                    return render(request,'ResidentRegistration.html',context)
             Card.objects.create(Car_Plate_number=cars[index],Barcode_id=bcode,type="resident",Resident=re) #save Card details of resident in card table
             abc=Card.objects.get(Car_Plate_number=cars[index])
             print(abc.Resident)
             cards.append(Card.objects.get(Car_Plate_number=cars[index]))
         print(cars)
-        print(cards)  
+        print(cards) 
+        context={
+            "msg":"Resident Added Successfully"
+        }
+        return render(request,'ResidentRegistration.html',context) 
     return render(request,'ResidentRegistration.html')
 
 @login_required(login_url='Login')
@@ -572,7 +667,6 @@ def ViewDetailsGuest(request):
 
 @login_required(login_url="Login")
 def GuestRegistration(request):
-    
     if request.method=='POST':
         F_name=request.POST.get('First_Name')
         L_name=request.POST.get('Last_Name')
@@ -585,17 +679,32 @@ def GuestRegistration(request):
         sector=request.POST.get('Sector')
         GuestType=request.POST.get('GuestType')
         bcode=randint(100000000000,999999999999)
-        Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
-        car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
+        try:
+            Car.objects.create(Car_Plate_number=Car_Plate_Number,Name=Car_name) #save car details of Guest in car table
+            car=Car.objects.get(Car_Plate_number=Car_Plate_Number)
+        except IntegrityError as e: 
+            if 'UNIQUE constraint' in e.args[0]:
+                context={
+                    "msg":"Car with Plate Number Already Exists"
+                }
+                return render(request,'GuestRegistration.html',context)
         Card.objects.create(Car_Plate_number=car,Barcode_id=bcode,type="guest")#save Card details of Guest in card table
-        
         card=Card.objects.get(Car_Plate_number=Car_Plate_Number)
-        Guests.objects.create(
-            First_Name=F_name,Last_Name=L_name,CNIC=cnic,
-            Card_id=card,Car_Plate_number=car,
-            House_no=H_no,Street=street,Sector=sector,type="guest"
-            ,GuestType=GuestType
-            )#save details Guest in table
+        try:
+            Guests.objects.create(
+                First_Name=F_name,Last_Name=L_name,CNIC=cnic,
+                Card_id=card,Car_Plate_number=car,
+                House_no=H_no,Street=street,Sector=sector,type="guest"
+                ,GuestType=GuestType
+                )#save details Guest in table
+        except IntegrityError as e: 
+            if 'UNIQUE constraint' in e.args[0]:
+                car.delete()
+                card.delete()
+                context={
+                    "msg":"Guest with this CNIC number Already Exists"
+                }
+                return render(request,'GuestRegistration.html',context)
 
         if 'Issuecard' in request.POST:
             re=Guests.objects.get(CNIC=cnic)
@@ -606,8 +715,11 @@ def GuestRegistration(request):
                     'card':card
             }
             return render(request,'IssueCard.html',context)
-   
-
+        context={
+            "msg":"Guest Added Successfully"
+        }
+        return render(request,'GuestRegistration.html',context)
+        
     return render(request,'GuestRegistration.html')
 
 

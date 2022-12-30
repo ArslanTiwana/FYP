@@ -14,8 +14,6 @@ class Person(models.Model):
     Phone_Number=models.BigIntegerField(null=True)
     class Meta:
         abstract=True
-        
-
 class Car(models.Model):
     Car_Plate_number=models.CharField(max_length=7,primary_key=True)
     Name=models.CharField(max_length=30,null=True)
@@ -28,9 +26,7 @@ class Driver(Person):
     Sector=models.CharField(max_length=200,blank=True,null=True)
     Sector=models.CharField(max_length=200,blank=True,null=True)
     type=models.CharField(max_length=20,default="resident")
-
     class Meta:
-
         abstract=True
 class Residents(Driver):
     Resident_id=models.AutoField(primary_key=True)

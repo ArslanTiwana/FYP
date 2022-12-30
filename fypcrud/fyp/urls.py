@@ -31,6 +31,8 @@ urlpatterns = [
     path("ViewDetailsGuest", views.ViewDetailsGuest, name='ViewDetailsGuest'),
 
     path("barcode", views.barcode, name='barcode'),
+    path("allow", views.allow, name='allow'),
+
     path("issuecard/<int:id>/<str:type>",views.issuecard,name='issuecard'),
 
      path("ViewDetailsGuest/history/<int:id>/", views.historys, name='history'),

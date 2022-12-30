@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{%block title%}
+Dashboard
+{%endblock title%}
+
+{%block body%}
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<br>
+<br>
+<h2>Allow Entry/Exit Page </h2>
+<div style="margin-top: 25px;">
+    <form action="" method="POST" id="app-form">
+        {% csrf_token %}
+
+        <div class="mb-3">
+
+            <input type="number" maxlength="13" class="form-control" value="" name="bid" autofocus>
+        </div>
+        <button type="submit" name="allow" class="btn btn-primary">Allow</button>
+    </form>
+</div>
+<h3>{{error_message}} </h3>
+<h3>{{message}} {{msg}} </h3>
+<h3>{{matched}} </h3>
+
+{%endblock body%}

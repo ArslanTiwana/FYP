@@ -1,22 +1,21 @@
+{% extends 'base.html' %}
+{%load static%}
 
-               
-                {% extends 'base.html' %}
-                {%load static%}
-               
-                {%block title%}
-                Details
-                {%endblock title%} 
-            {%block body%}
-          {{re.First_Name}}
-          
-            {%for crd in card%}    
-            {%if crd.Resident.CNIC == re.CNIC%}
-        </br></br>{{crd.Car_Plate_number.Car_Plate_number}}
-        <td>
-            <a href="{% url 'issueresidentcard' crd.Card_id re.Resident_id %}">IssueCard</a>
-        </td>
-    </br></br>
-            {% endif %}
-           {%endfor%}
-            
-            {%endblock body%}
+{%block title%}
+Details
+{%endblock title%}
+{%block body%}
+<h1 style="margin-top: 75px;margin-left: 30%;">Resident details</h1>
+<h3>Personal details</h3>
+<h5>Name: {{re.First_Name}} {{re.Last_Name}}</h5>
+<h5>CNIC: {{re.CNIC}}</h5>
+<h5>Address: House No:{{ re.House_no }} Street:{{re.Street}} Sector:{{re.Sector}}</h5>
+<br>
+<h3>Cars details</h3>
+{%for crd in card%}
+{%if crd.Resident.CNIC == re.CNIC%}
+<h5>{{crd.Car_Plate_number.Car_Plate_number}}      <a href="{% url 'issueresidentcard' crd.Card_id re.Resident_id %}">IssueCard</a></h5>
+{% endif %}
+{%endfor%}
+
+{%endblock body%}

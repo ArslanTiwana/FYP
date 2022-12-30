@@ -1,86 +1,81 @@
+{% extends 'base.html' %}
+{%block title%}
+Details
+{%endblock title%}
+{%block body%}
+<div class="dropdown" style="margin-top: 20px;">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Dropdown button
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" href="/ViewDetailsResident">Resident</a></li>
+        <li><a class="dropdown-item" href="/ViewDetailsGuest" type="selected">Guest</a></li>
+    </ul>
+</div>
+<h1 style="margin-top: 75px;">Guest</h1>
+<div class="container">
+    <table class="table" id="table_id">
+        <thead>
+            <tr>
+                <th scope="col">Sr #</th>
+                <th scope="col">Plate number</th>
+                <th scope="col">Car Name</th>
+                <th scope="col">CNIC</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col"> Address</th>
+                <th scope="col"> IssueCard</th>
+                <th scope="col"> History</th>
+                <th scope="col"> Actions</th>
+                <th scope="col"> Actions</th>
 
-                {% extends 'base.html' %}
-                {%block title%}
-                Details
-                {%endblock title%} 
-            {%block body%}
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown button
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                  <li><a class="dropdown-item" href="/ViewDetailsResident">Resident</a></li>
-                  <li><a class="dropdown-item" href="/ViewDetailsGuest" type="selected">Guest</a></li>
-                </ul>
-              </div>
-            <h1 style="margin-top: 75px;">Guest</h1>
-            <div class="container">
-                <table class="table" id="table_id" >
-                    <thead>
-                        <tr>
-                            <th scope="col">Sr #</th>
-                            <th scope="col">Plate number</th> 
-                            <th scope="col">Car Name</th>
-                            <th scope="col">CNIC</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
-                            <th scope="col"> Address</th>
-                            <th scope="col"> IssueCard</th>
-                            <th scope="col"> History</th>
-                            <th scope="col" > Actions</th>
-                            <th scope="col" > Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for data in Guests %}
+                <td>{{ forloop.counter }}</td>
+                <td>{{ data.Car_Plate_number }}</td>
+                {% with w=data.Car_Plate_number %}
+                {% for ca in car %}
+                {%with x=ca.Car_Plate_number %}
+                {% if x == w.Car_Plate_number %}
+                <td>{{data.Car_plate_number.Name}}</td>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                        {% for data in Guests %}
-                        <td>{{ forloop.counter }}</td>
-                            <td>{{ data.Car_Plate_number }}</td> 
-                            {% with w=data.Car_Plate_number %}     
-                            {% for ca in car %}
-                            {%with x=ca.Car_Plate_number %}
-                            {% if x == w.Car_Plate_number %}
-                            <td>{{data.Car_plate_number.Name}}</td>
+                {%else%}
+                {% endif %}
+                {%endwith%}
+                {%endfor%}
+                {% endwith %}
+                <td>{{ data.CNIC }}</td>
+                <td>{{ data.First_Name }}</td>
+                <td>{{ data.Last_Name }}</td>
+                <td>House No:{{ data.House_no }} Street:{{data.Street}} Sector:{{data.Sector}}</td>
+                <td>
+                    <a href="{% url 'issuecard' data.Guest_id data.type %}">IssueCard</a>
+                </td>
+                <td>
+                    <a href="{% url 'history' data.Guest_id %}">History</a>
+                </td>
+                <td>
+                    <a href="{% url 'Edit_Guest' data.Guest_id %}">Edit</a>
+                </td>
+                <td>
+                    <form action="{% url 'delete_guest' data.Guest_id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" value="delete">
 
-                            {%else%}
-                            {% endif %}
-                            {%endwith%}
-                            {%endfor%}
-                            {% endwith %}
-                            <td>{{ data.CNIC }}</td>
-                            <td>{{ data.First_Name }}</td>
-                            <td>{{ data.Last_Name }}</td>
-                            <td>House No:{{ data.House_no }} Street:{{data.Street}} Sector:{{data.Sector}}</td>
-                                <td>
-                                    <a href="{% url 'issuecard' data.Guest_id data.type %}">IssueCard</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'history' data.Guest_id %}">History</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'Edit_Guest' data.Guest_id %}">Edit</a>
-                                </td>
-                                <td>
-                                <form action="{% url 'delete_guest' data.Guest_id %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="submit" value="delete">
-                                    
-                                </input>
-                                </form> 
-                            </td>
-                            </tr>
-                        </thead>
-                        
-                        {% endfor %}
+                        </input>
+                    </form>
+                </td>
+            </tr>
+            </thead>
 
-                   
-                    </tbody>
-                </table>
-            </div>
-                {%endblock body%}
+            {% endfor %}
 
 
-
-
-
+        </tbody>
+    </table>
+</div>
+{%endblock body%}

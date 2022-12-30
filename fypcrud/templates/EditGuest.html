@@ -1,78 +1,91 @@
 {% extends 'base.html' %}
 {%block title%}
 Guest Update {{id}}
-{%endblock title%} 
+{%endblock title%}
 {%block body%}
 <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
-<form action="{% url 'Guestupdate' data.Guest_id %}" method="POST">
-    {% csrf_token %}
-       
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-6">
-                    
-                            <label class="form-label">First Name:</label>
-                            <input type="text" class="form-control" value={{data.First_Name}} name="First_Name" style="background-color:rgb(204, 255, 153)"> 
-                        
-                </div>
-                <div class="col-xs-12 col-sm-6 col-6">
-                    
-                            <label class="form-label">Last Name:</label>
-                <input type="text" class="form-control" value={{data.Last_Name}} name="Last_Name" style="background-color:rgb(204, 255, 153)">
-                       
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-6">
-                    
-                    <label class="form-label">CNIC:</label>
-                    <input type="text" class="form-control" value={{data.CNIC}} maxlength="13"  name="CNIC" style="background-color:rgb(204, 255, 153)">
-                        
-                </div>
-            </div>
-            
-    
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-6" >
-                    <label class="form-label">Car Name:</label>
-                    <input type="text" class="form-control" value={{car.Name}} name="Car_Name" style="background-color:rgb(204, 255, 153)">
-                </div>
-                <div class="col-xs-12 col-sm-6 col-6">
-                    <label class="form-label">License plate number:</label>
-                <input type="text" class="form-control" value={{data.Car_Plate_number}} name="Car_Plate_number" style="background-color:rgb(204, 255, 153)">
-                </div> 
-            </div>   
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-3" style="width:33%" >
-                    
-                            <label class="form-label">House Number:</label>
-                            <input type="number" class="form-control" value={{data.House_no}} name="H_no" style="background-color:rgb(204, 255, 153)">
-                       
-                </div>
-                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                    
-                                <label class="form-label">Street:</label>
-                <input type="number" class="form-control" value={{data.Street}} name="Street" style="background-color:rgb(204, 255, 153)">
-                            
-                       
-                </div>
-                <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
-                    
-                                <label class="form-label">Sector/Block:</label>
-                                <input type="number" class="form-control" style="background-color:rgb(204, 255, 153)" value={{data.Sector}} name="Sector">
-                                
-                    </div>
-                </div>
-            </div>
-           
-           
-            <br>
-            <span>
-            <form action="{% url 'Guestupdate' data.Guest_id %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" class="btn btn-primary" value="Edit">
-            </form>
-            </span>
-        </form>
+    {% if msg%}
+    <div class="alert alert-primary" role="alert">
+        Message:{{msg}}
     </div>
+    {%endif%}
+    <form action="{% url 'Guestupdate' data.Guest_id %}" method="POST">
+        {% csrf_token %}
 
-    {%endblock body%}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-6">
+
+                <label class="form-label">First Name:</label>
+                <input type="text" class="form-control" value={{data.First_Name}} name="First_Name"
+                    style="background-color:rgb(204, 255, 153)">
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-6">
+
+                <label class="form-label">Last Name:</label>
+                <input type="text" class="form-control" value={{data.Last_Name}} name="Last_Name"
+                    style="background-color:rgb(204, 255, 153)">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-6">
+
+                <label class="form-label">CNIC:</label>
+                <input type="text" class="form-control" value={{data.CNIC}} maxlength="13" name="CNIC"
+                    style="background-color:rgb(204, 255, 153)">
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-6">
+                <label class="form-label">Car Name:</label>
+                <input type="text" class="form-control" value={{car.Name}} name="Car_Name"
+                    style="background-color:rgb(204, 255, 153)">
+            </div>
+            <div class="col-xs-12 col-sm-6 col-6">
+                <label class="form-label">License plate number:</label>
+                <input type="text" class="form-control" value={{data.Car_Plate_number}} name="Car_Plate_number"
+                    style="background-color:rgb(204, 255, 153)">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-3" style="width:33%">
+
+                <label class="form-label">House Number:</label>
+                <input type="number" class="form-control" value={{data.House_no}} name="H_no"
+                    style="background-color:rgb(204, 255, 153)">
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+
+                <label class="form-label">Street:</label>
+                <input type="number" class="form-control" value={{data.Street}} name="Street"
+                    style="background-color:rgb(204, 255, 153)">
+
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
+
+                <label class="form-label">Sector/Block:</label>
+                <input type="number" class="form-control" style="background-color:rgb(204, 255, 153)"
+                    value={{data.Sector}} name="Sector">
+
+            </div>
+        </div>
+</div>
+
+
+<br>
+<span>
+    <form action="{% url 'Guestupdate' data.Guest_id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Edit">
+    </form>
+</span>
+</form>
+</div>
+
+{%endblock body%}

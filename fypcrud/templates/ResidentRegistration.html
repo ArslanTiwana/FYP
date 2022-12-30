@@ -33,7 +33,11 @@ Resident registration
             </li>
         </ul>
     </div>
-
+    {% if msg%}
+    <div class="alert alert-primary" role="alert">
+        Message:{{msg}}
+    </div>
+    {%endif%}
 
     <h1 style="margin-top: 75px;">Residents</h1>
     <div class="container" style="background-color:rgb(255, 255, 204);padding:40px">
@@ -66,7 +70,7 @@ Resident registration
                 <div class="col-xs-12 col-sm-4 col-4">
                     <label class="form-label required">Email:</label>
                     <input type="text" class="form-control" value="" placeholder="abc@gmail.com" name="Email"
-                         style="background-color:rgb(204, 255, 153) " required>
+                        style="background-color:rgb(204, 255, 153) " required>
                 </div>
             </div>
 
@@ -89,8 +93,8 @@ Resident registration
                 <div class="col-xs-12 col-sm-6 col-4" style="width:33%">
 
                     <label class="form-label">Sector/Block:</label>
-                    <input type="number" class="form-control" placeholder="0"
-                        style="background-color:rgb(204, 255, 153)" value="" name="Sector">
+                    <input type="text" class="form-control" placeholder="0" style="background-color:rgb(204, 255, 153)"
+                        value="" name="Sector">
 
                 </div>
             </div>
@@ -126,7 +130,6 @@ Resident registration
 
 
     </form>
-</div>
 </div>
 <script>
     var counter = 0;
